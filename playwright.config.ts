@@ -16,9 +16,10 @@ export default defineConfig({
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
-  // Tests run against the production build, not the dev server.
+  // `astro preview` does not support the Vercel adapter, so tests run on the dev server.
+  // --ignore-lock keeps it in the foreground even when Astro detects an AI agent.
   webServer: {
-    command: `npm run build && npm run preview -- --port ${PORT}`,
+    command: `npm run dev -- --port ${PORT} --ignore-lock`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

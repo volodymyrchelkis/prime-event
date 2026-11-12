@@ -9,7 +9,10 @@ test('contact channels link to phone, Telegram and Instagram', async ({ page }) 
     'href',
     `tel:${site.phone}`,
   );
-  await expect(main.getByRole('link', { name: /Telegram/ })).toHaveAttribute('href', site.telegram);
+  await expect(main.getByRole('link', { name: /Написать в Telegram/ })).toHaveAttribute(
+    'href',
+    site.telegram,
+  );
   await expect(main.getByRole('link', { name: /Instagram/ })).toHaveAttribute(
     'href',
     site.instagram,
