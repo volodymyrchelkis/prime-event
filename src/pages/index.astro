@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Photo from '../components/Photo.astro';
+import { site } from '../data/site';
+import { services } from '../data/services';
+---
+
+<Layout>
+  <section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:grid-cols-2 md:py-20">
+    <div class="text-center md:text-left">
+      <p class="text-xs uppercase tracking-[0.3em] text-accent">{site.city}</p>
+      <h1 class="mt-4 font-serif text-5xl leading-tight md:text-6xl">
+        Праздники, которые запоминаются
+      </h1>
+      <p class="mt-6 text-muted">{site.description}</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
+        <a href="/contacts" class="bg-ink px-7 py-3 text-xs uppercase tracking-[0.2em] text-paper hover:bg-accent-dark">
+          Забронировать праздник
+        </a>
+        <a href="/characters" class="border border-ink px-7 py-3 text-xs uppercase tracking-[0.2em] hover:bg-ink hover:text-paper">
+          Персонажи
+        </a>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <Photo ratio="3 / 4" tone={0} />
+      <div class="mt-10"><Photo ratio="3 / 4" tone={2} /></div>
+    </div>
+  </section>
+
+  <section class="border-t border-line">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <h2 class="text-center font-serif text-4xl">Что мы делаем</h2>
+      <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          services.slice(0, 3).map((s, i) => (
+            <a href="/services" class="group block">
+              <Photo ratio="4 / 3" tone={i} label={s.title} />
+              <h3 class="mt-4 font-serif text-2xl group-hover:text-accent-dark">{s.title}</h3>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>

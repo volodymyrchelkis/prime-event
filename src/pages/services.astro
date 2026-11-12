@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Photo from '../components/Photo.astro';
+import { services, servicesNote } from '../data/services';
+---
+
+<Layout title="Услуги">
+  <section class="mx-auto max-w-6xl px-4 py-14">
+    <h1 class="text-center font-serif text-5xl">Услуги</h1>
+    <p class="mx-auto mt-4 max-w-xl text-center text-muted">{servicesNote}</p>
+
+    <div class="mt-14 space-y-16">
+      {
+        services.map((s, i) => (
+          <article class="grid items-center gap-8 md:grid-cols-2">
+            <div class:list={[i % 2 === 1 && 'md:order-2']}>
+              <Photo ratio="4 / 3" tone={i} label={s.title} />
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-accent">0{i + 1}</p>
+              <h2 class="mt-3 font-serif text-3xl">{s.title}</h2>
+              <p class="mt-4 text-muted">{s.text}</p>
+              <a href="/contacts" class="mt-6 inline-block border-b border-ink pb-1 text-xs uppercase tracking-[0.2em] hover:text-accent-dark">
+                Узнать цену
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Layout>
