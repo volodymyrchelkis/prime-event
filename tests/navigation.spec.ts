@@ -90,3 +90,18 @@ test('every page links its translations for search engines', async ({ page }) =>
     );
   }
 });
+
+test('services start with kids events and do not offer the kids room', async ({ page }) => {
+  for (const [url, first, room] of [
+    ['/services', 'Детские мероприятия', /Детская комната/],
+    ['/uk/services', 'Дитячі заходи', /Дитяча кімната/],
+    ['/bg/services', 'Детски събития', /Детски кът/],
+  ] as const) {
+    await page.goto(url);
+    const services = page.locator('article:not(.package) h3');
+    await expect(services.first()).toHaveText(first);
+    await expect(page.locator('body')).not.toContainText(room);
+  }
+  await page.goto('/');
+  await expect(page.locator('body')).not.toContainText(/комнат/i);
+});
