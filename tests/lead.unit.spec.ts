@@ -17,6 +17,7 @@ test.describe('parseLead', () => {
         name: 'Анна',
         phone: '+359 (88) 123-45-67',
         contact: 'any',
+        package: null,
         date: '',
         comment: '',
         lang: 'ru',
@@ -36,6 +37,8 @@ test.describe('parseLead', () => {
     [{ ...valid, date: '20.12.2026' }, 'date'],
     [{ ...valid, contact: 'pigeon' }, 'contact'],
     [{ ...valid, contact: 'toString' }, 'contact'],
+    [{ ...valid, package: 'gold' }, 'package'],
+    [{ ...valid, package: 'toString' }, 'package'],
     [{ ...valid, lang: 'en' }, 'lang'],
     [{ ...valid, lang: 'constructor' }, 'lang'],
     [{ ...valid, website: 'x' }, 'spam'],
@@ -68,6 +71,7 @@ const lead: Lead = {
   name: 'Анна',
   phone: '088 123 4567',
   contact: 'viber',
+  package: null,
   date: '',
   comment: '',
   lang: 'uk',
@@ -77,6 +81,15 @@ test('formatLead shows phone, contact and language, and skips empty optional fie
   expect(formatLead(lead)).toBe(
     '🎉 Новая заявка с сайта\n\nИмя: Анна\nТелефон: +359881234567\nСвязь: Viber\nЯзык сайта: Українська',
   );
+});
+
+test('formatLead names the chosen program with its price', () => {
+  expect(formatLead({ ...lead, package: 'premium' })).toContain('Программа: Премиум (140 €)');
+});
+
+test('parseLead keeps a known program', () => {
+  const result = parseLead({ name: 'Анна', phone: '+359881234567', package: 'maximum' });
+  expect(result.ok && result.lead.package).toBe('maximum');
 });
 
 test('leadButtons link to every messenger, preferred one first', () => {

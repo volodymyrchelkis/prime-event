@@ -138,3 +138,56 @@ test.describe('Viber hand-off page', () => {
     });
   }
 });
+
+test.describe('party programs', () => {
+  test('services page lists programs with prices, extras and payment terms', async ({ page }) => {
+    await page.goto('/services');
+    const cards = page.locator('article.package');
+    await expect(cards).toHaveCount(3);
+    await expect(cards.locator('h3')).toHaveText(['Стандарт', 'Премиум', 'Максимум']);
+    await expect(cards).toContainText(['90 €', '140 €', '190 €']);
+    await expect(page.locator('#extras')).toContainText('Пиньята');
+    await expect(page.getByText(/аванс 40%/)).toBeVisible();
+  });
+
+  test('choosing a program preselects it in the form and sends it', async ({ page }) => {
+    await page.goto('/uk/services');
+    let sent: Record<string, string> | undefined;
+    await page.route('**/api/lead', async (route) => {
+      sent = route.request().postDataJSON();
+      await route.fulfill({ json: { ok: true } });
+    });
+
+    await page
+      .locator('article.package[data-package="premium"]')
+      .getByRole('link', { name: 'Обрати програму' })
+      .click();
+    await expect(page).toHaveURL(/\/uk\/contacts\/?\?package=premium#lead-form$/);
+    await expect(page.getByLabel('Програма')).toHaveValue('premium');
+
+    await page.getByLabel('Ім’я *').fill('Анна');
+    await page.getByLabel('Телефон *').fill('+359 88 123 4567');
+    await page.getByRole('button', { name: 'Надіслати заявку' }).click();
+
+    await expect(page.getByRole('status')).toHaveText(/Заявку надіслано/);
+    expect(sent).toMatchObject({ package: 'premium', lang: 'uk' });
+  });
+
+  test('ignores an unknown program in the link', async ({ page }) => {
+    await page.goto('/contacts?package=gold');
+    await expect(page.getByLabel('Программа')).toHaveValue('');
+  });
+});
+
+test('services page lists contractors and equipment in every language', async ({ page }) => {
+  for (const [url, heading, item] of [
+    ['/services', 'Подрядчики', 'Фотограф / видеограф'],
+    ['/uk/services', 'Підрядники', 'Конфеті-гармата'],
+    ['/bg/services', 'Изпълнители', 'Машина за дим'],
+  ]) {
+    await page.goto(url);
+    const more = page.locator('#more');
+    await expect(more.getByRole('heading', { name: heading })).toBeVisible();
+    await expect(more).toContainText(item);
+  }
+});

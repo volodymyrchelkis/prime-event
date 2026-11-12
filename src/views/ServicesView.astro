@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Photo from '../components/Photo.astro';
+import { contractors, equipment } from '../data/organization';
+import { extras, packages } from '../data/packages';
 import { services } from '../data/services';
 import { localizePath, t, type Lang } from '../i18n';
 
@@ -10,14 +12,88 @@ interface Props {
 
 const { lang } = Astro.props;
 const text = t(lang).services;
+const contacts = localizePath(lang, '/contacts');
 ---
 
 <Layout lang={lang} title={text.title}>
   <section class="mx-auto max-w-6xl px-4 py-14">
     <h1 class="text-center font-serif text-5xl">{text.title}</h1>
+
+    <h2 class="mt-12 text-center font-serif text-3xl">{text.packagesTitle}</h2>
     <p class="mx-auto mt-4 max-w-xl text-center text-muted">{text.note}</p>
 
-    <div class="mt-14 space-y-16">
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      {packages.map((p) => (
+        <article
+          class="package flex flex-col border border-line bg-white/60 p-8"
+          data-package={p.id}
+        >
+          <h3 class="font-serif text-3xl">{p.name[lang]}</h3>
+          <p class="mt-2 font-serif text-4xl text-accent-dark">{p.priceEur} €</p>
+          <p class="mt-3 text-xs tracking-[0.2em] text-muted uppercase">
+            {p.characters[lang]} · {p.duration[lang]}
+          </p>
+          <ul class="mt-6 flex-1 space-y-2 text-sm">
+            {p.features[lang].map((f) => (
+              <li class="flex gap-2">
+                <span class="text-accent">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <a
+            href={`${contacts}?package=${p.id}#lead-form`}
+            class="mt-8 bg-ink px-6 py-3 text-center text-xs tracking-[0.2em] text-paper uppercase hover:bg-accent-dark"
+          >
+            {text.choosePackage}
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <h2 class="mt-16 text-center font-serif text-3xl">{text.extrasTitle}</h2>
+    <ul class="mx-auto mt-8 max-w-2xl divide-y divide-line border-y border-line" id="extras">
+      {extras.map((e) => (
+        <li class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4">
+          <span>
+            <span class="font-serif text-xl">{e.name[lang]}</span>
+            {e.note && <span class="block text-xs text-muted">{e.note[lang]}</span>}
+          </span>
+          <span class="text-sm whitespace-nowrap text-accent-dark">
+            {e.fromEur === null
+              ? text.byKids
+              : e.perHour
+                ? `${e.fromEur} € ${text.perHour}`
+                : `${text.from} ${e.fromEur} €`}
+          </span>
+        </li>
+      ))}
+    </ul>
+    <p class="mx-auto mt-6 max-w-2xl text-center text-sm text-muted">{text.payment}</p>
+
+    <h2 class="mt-20 text-center font-serif text-3xl">{text.moreTitle}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-center text-muted">{text.moreNote}</p>
+    <div class="mx-auto mt-10 grid max-w-4xl gap-6 md:grid-cols-2" id="more">
+      {[
+        { title: text.contractorsTitle, items: contractors },
+        { title: text.equipmentTitle, items: equipment },
+      ].map((group) => (
+        <section class="border border-line bg-white/60 p-8">
+          <h3 class="font-serif text-2xl">{group.title}</h3>
+          <ul class="mt-5 space-y-2 text-sm">
+            {group.items.map((item) => (
+              <li class="flex gap-2">
+                <span class="text-accent">✓</span>
+                {item[lang]}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <h2 class="mt-20 text-center font-serif text-3xl">{text.organizationTitle}</h2>
+    <div class="mt-12 space-y-16">
       {services.map((s, i) => (
         <article class="grid items-center gap-8 md:grid-cols-2">
           <div class:list={[i % 2 === 1 && 'md:order-2']}>
@@ -25,10 +101,11 @@ const text = t(lang).services;
           </div>
           <div>
             <p class="text-xs tracking-[0.3em] text-accent uppercase">0{i + 1}</p>
-            <h2 class="mt-3 font-serif text-3xl">{s.title[lang]}</h2>
+            <h3 class="mt-3 font-serif text-3xl">{s.title[lang]}</h3>
             <p class="mt-4 text-muted">{s.text[lang]}</p>
+            {s.price && <p class="mt-3 text-accent-dark">{s.price[lang]}</p>}
             <a
-              href={localizePath(lang, '/contacts')}
+              href={contacts}
               class="mt-6 inline-block border-b border-ink pb-1 text-xs tracking-[0.2em] uppercase hover:text-accent-dark"
             >
               {text.askPrice}

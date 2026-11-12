@@ -3,6 +3,7 @@ import type { Localized } from '../i18n';
 export interface Service {
   title: Localized;
   text: Localized;
+  price?: Localized;
 }
 
 // Тексты взяты с текущей страницы varnaevent.mssg.me; описания пока черновые.
@@ -66,5 +67,7 @@ export const services: Service[] = [
       uk: 'Додаткова послуга: допоможемо спланувати свято, бюджет і таймінг.',
       bg: 'Допълнителна услуга: ще помогнем да планирате празника, бюджета и програмата.',
     },
+    // Price card: "КОНСУЛЬТАЦИЯ ОРГАНИЗАТОРА - 200 лев/100€", 1–3 hours.
+    price: { ru: '100 € · 1–3 часа', uk: '100 € · 1–3 години', bg: '100 € · 1–3 часа' },
   },
 ];

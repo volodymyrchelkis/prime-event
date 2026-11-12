@@ -1,3 +1,4 @@
+import { packages, type PackageId } from '../data/packages';
 import { defaultLang, isLang, languages, type Lang } from '../i18n';
 
 // Labels for the Telegram message the owner reads; the form shows translated ones.
@@ -15,13 +16,15 @@ export interface Lead {
   name: string;
   phone: string;
   contact: ContactMethod;
+  /** Chosen party program, or null when the client has not picked one yet. */
+  package: PackageId | null;
   date: string;
   comment: string;
   lang: Lang;
 }
 
 /** Error codes; the form translates them for the visitor. */
-export type LeadError = 'spam' | 'contact' | 'lang' | 'name' | 'phone' | 'date';
+export type LeadError = 'spam' | 'contact' | 'package' | 'lang' | 'name' | 'phone' | 'date';
 
 export type LeadResult = { ok: true; lead: Lead } | { ok: false; error: LeadError };
 
@@ -48,6 +51,10 @@ export function parseLead(data: Record<string, unknown>): LeadResult {
   const contact = field(data, 'contact', 20) || 'any';
   if (!isContactMethod(contact)) return { ok: false, error: 'contact' };
 
+  const packageId = field(data, 'package', 20);
+  const chosen = packages.find((p) => p.id === packageId);
+  if (packageId && !chosen) return { ok: false, error: 'package' };
+
   const lang = field(data, 'lang', 5) || defaultLang;
   if (!isLang(lang)) return { ok: false, error: 'lang' };
 
@@ -55,6 +62,7 @@ export function parseLead(data: Record<string, unknown>): LeadResult {
     name: field(data, 'name', 100),
     phone: field(data, 'phone', 30),
     contact,
+    package: chosen?.id ?? null,
     date: field(data, 'date', 10),
     comment: field(data, 'comment', 1000),
     lang,
@@ -88,6 +96,8 @@ export function formatLead(lead: Lead): string {
     `Связь: ${contactMethods[lead.contact]}`,
     `Язык сайта: ${languages[lead.lang].name}`,
   ];
+  const chosen = packages.find((p) => p.id === lead.package);
+  if (chosen) lines.push(`Программа: ${chosen.name.ru} (${chosen.priceEur} €)`);
   if (lead.date) lines.push(`Дата праздника: ${lead.date}`);
   if (lead.comment) lines.push(`Комментарий: ${lead.comment}`);
   return lines.join('\n');
