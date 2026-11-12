@@ -1,15 +1,17 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Manrope', system-ui, sans-serif;
+  /* Both fonts cover Cyrillic, including Bulgarian letterforms. */
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
 
+  /* Text colors keep at least 4.5:1 contrast on paper (WCAG AA). */
   --color-paper: #faf7f2;
   --color-ink: #2b2622;
-  --color-muted: #8a7f75;
+  --color-muted: #6b6158;
   --color-line: #e8e1d8;
-  --color-accent: #c08a6b;
-  --color-accent-dark: #9e6c50;
+  --color-accent: #9a6142;
+  --color-accent-dark: #7d4a30;
 }
 
 html {
