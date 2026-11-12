@@ -1,0 +1,143 @@
+---
+import { site } from '../data/site';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = t(lang).form;
+
+const input =
+  'w-full border border-line bg-white/70 px-4 py-3 text-ink outline-none focus:border-accent';
+const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercase';
+---
+
+<form
+  id="lead-form"
+  class="mx-auto mt-12 max-w-xl space-y-5 text-left"
+  data-messages={JSON.stringify(text.messages)}
+  novalidate
+>
+  <h2 class="text-center font-serif text-3xl">{text.title}</h2>
+  <p class="text-center text-sm text-muted">{text.subtitle}</p>
+
+  <input type="hidden" name="lang" value={lang} />
+
+  <div>
+    <label for="lead-name" class={label}>
+      {text.name}
+    </label>
+    <input id="lead-name" name="name" required maxlength="100" autocomplete="name" class={input} />
+  </div>
+  <div>
+    <label for="lead-phone" class={label}>
+      {text.phone}
+    </label>
+    <input
+      id="lead-phone"
+      name="phone"
+      type="tel"
+      required
+      maxlength="30"
+      autocomplete="tel"
+      placeholder="+359 ..."
+      class={input}
+    />
+  </div>
+  <div>
+    <label for="lead-contact" class={label}>
+      {text.contact}
+    </label>
+    <select id="lead-contact" name="contact" class={input}>
+      {Object.entries(text.contactMethods).map(([value, name]) => (
+        <option value={value}>{name}</option>
+      ))}
+    </select>
+  </div>
+  <div>
+    <label for="lead-date" class={label}>
+      {text.date}
+    </label>
+    <input id="lead-date" name="date" type="date" class={input} />
+  </div>
+  <div>
+    <label for="lead-comment" class={label}>
+      {text.comment}
+    </label>
+    <textarea
+      id="lead-comment"
+      name="comment"
+      rows="4"
+      maxlength="1000"
+      placeholder={text.commentPlaceholder}
+      class={input}
+    ></textarea>
+  </div>
+
+  <!-- Honeypot for bots: hidden from people and screen readers. -->
+  <div class="hidden" aria-hidden="true">
+    <label for="lead-website">Website</label>
+    <input id="lead-website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <button
+    type="submit"
+    class="w-full cursor-pointer bg-ink px-7 py-4 text-xs tracking-[0.2em] text-paper uppercase hover:bg-accent-dark disabled:cursor-wait disabled:opacity-60"
+  >
+    {text.submit}
+  </button>
+
+  <p id="lead-status" role="status" aria-live="polite" class="min-h-6 text-center text-sm"></p>
+  <p class="text-center text-xs text-muted">
+    {text.orWrite}{' '}
+    <a href={site.telegram} target="_blank" rel="noopener" class="underline">
+      Telegram
+    </a>
+  </p>
+</form>
+
+<script>
+  import type { UI } from '../i18n/ui';
+
+  const form = document.querySelector<HTMLFormElement>('#lead-form')!;
+  const status = form.querySelector<HTMLParagraphElement>('#lead-status')!;
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const messages: UI['form']['messages'] = JSON.parse(form.dataset.messages!);
+  const errors: Record<string, string> = messages.errors;
+
+  const show = (text: string, ok: boolean) => {
+    status.textContent = text;
+    status.classList.toggle('text-accent-dark', ok);
+    status.classList.toggle('text-red-700', !ok);
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    button.disabled = true;
+    show(messages.sending, true);
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const body = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        form.reset();
+        show(messages.success, true);
+      } else {
+        show(`${errors[body.error] ?? errors.failed}. ${messages.fallback}`, false);
+      }
+    } catch {
+      show(messages.network, false);
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

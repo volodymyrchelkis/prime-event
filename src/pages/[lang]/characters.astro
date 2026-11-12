@@ -1,0 +1,10 @@
+---
+import CharactersView from '../../views/CharactersView.astro';
+import { prefixedLangPaths, type Lang } from '../../i18n';
+
+export const getStaticPaths = prefixedLangPaths;
+
+const lang = Astro.params.lang as Lang;
+---
+
+<CharactersView lang={lang} />

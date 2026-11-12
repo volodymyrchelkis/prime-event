@@ -1,0 +1,10 @@
+---
+import ServicesView from '../../views/ServicesView.astro';
+import { prefixedLangPaths, type Lang } from '../../i18n';
+
+export const getStaticPaths = prefixedLangPaths;
+
+const lang = Astro.params.lang as Lang;
+---
+
+<ServicesView lang={lang} />

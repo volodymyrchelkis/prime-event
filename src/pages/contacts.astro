@@ -1,35 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { site } from '../data/site';
-
-const channels = [
-  { label: 'Телефон', value: site.phoneDisplay, href: `tel:${site.phone}` },
-  { label: 'Telegram', value: 'Написать в Telegram', href: site.telegram },
-  { label: 'Instagram', value: site.instagramHandle, href: site.instagram },
-];
+import ContactsView from '../views/ContactsView.astro';
 ---
 
-<Layout title="Контакты">
-  <section class="mx-auto max-w-4xl px-4 py-14 text-center">
-    <h1 class="font-serif text-5xl">Контакты</h1>
-    <p class="mx-auto mt-4 max-w-xl text-muted">
-      Не нашли то, что искали? Напишите или позвоните — обсудим ваш праздник, условия и цену.
-    </p>
-
-    <div class="mt-12 grid gap-4 sm:grid-cols-3">
-      {channels.map((c) => (
-        <a
-          href={c.href}
-          target={c.href.startsWith('http') ? '_blank' : undefined}
-          rel="noopener"
-          class="border border-line bg-white/60 px-6 py-8 transition-colors hover:border-accent"
-        >
-          <span class="block text-xs uppercase tracking-[0.3em] text-accent">{c.label}</span>
-          <span class="mt-3 block font-serif text-xl">{c.value}</span>
-        </a>
-      ))}
-    </div>
-
-    <p class="mt-12 text-sm uppercase tracking-[0.2em] text-muted">{site.city}</p>
-  </section>
-</Layout>
+<ContactsView lang="ru" />

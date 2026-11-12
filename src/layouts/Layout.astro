@@ -1,23 +1,29 @@
 ---
 import '../styles/global.css';
 import { nav, site } from '../data/site';
+import { languages, langs, localizePath, splitPath, t, type Lang } from '../i18n';
 
 interface Props {
+  lang: Lang;
   title?: string;
 }
 
-const { title } = Astro.props;
-const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const { lang, title } = Astro.props;
+const text = t(lang);
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${text.tagline}`;
+const { path } = splitPath(Astro.url.pathname);
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={site.description} />
+    <meta name="description" content={text.description} />
     {!site.indexable && <meta name="robots" content="noindex, nofollow" />}
+    {langs.map((l) => (
+      <link rel="alternate" hreflang={l} href={localizePath(l, path)} />
+    ))}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,25 +36,51 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   <body class="flex min-h-screen flex-col antialiased">
     <header class="border-b border-line">
       <div class="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-6 sm:flex-row sm:justify-between">
-        <a href="/" class="font-serif text-3xl tracking-wide">
+        <a href={localizePath(lang, '/')} class="font-serif text-3xl tracking-wide">
           {site.name}
         </a>
-        <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs uppercase tracking-[0.2em]">
-          {nav.map((item) => (
-            <a
-              href={item.href}
-              class:list={[
-                'border-b pb-1 transition-colors',
-                path === item.href
-                  ? 'border-accent text-ink'
-                  : 'border-transparent text-muted hover:text-ink',
-              ]}
-              aria-current={path === item.href ? 'page' : undefined}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <div class="flex flex-col items-center gap-3 sm:flex-row sm:gap-8">
+          <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs tracking-[0.2em] uppercase">
+            {nav.map((item) => (
+              <a
+                href={localizePath(lang, item.path)}
+                class:list={[
+                  'border-b pb-1 transition-colors',
+                  path === item.path
+                    ? 'border-accent text-ink'
+                    : 'border-transparent text-muted hover:text-ink',
+                ]}
+                aria-current={path === item.path ? 'page' : undefined}
+              >
+                {text.nav[item.key]}
+              </a>
+            ))}
+          </nav>
+          <ul
+            class="flex gap-1 text-[11px] tracking-[0.15em]"
+            aria-label={text.languageSwitcher}
+            id="language-switcher"
+          >
+            {langs.map((l) => (
+              <li>
+                <a
+                  href={localizePath(l, path)}
+                  hreflang={l}
+                  lang={l}
+                  title={languages[l].name}
+                  aria-label={languages[l].name}
+                  aria-current={l === lang ? 'true' : undefined}
+                  class:list={[
+                    'block px-2 py-1 transition-colors',
+                    l === lang ? 'bg-ink text-paper' : 'text-muted hover:text-ink',
+                  ]}
+                >
+                  {languages[l].label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </header>
 
@@ -59,7 +91,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
     <footer class="border-t border-line">
       <div class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:justify-between">
         <span>
-          © {new Date().getFullYear()} {site.name} · {site.city}
+          © {new Date().getFullYear()} {site.name} · {text.city}
         </span>
         <div class="flex gap-5">
           <a href={site.instagram} target="_blank" rel="noopener" class="hover:text-ink">

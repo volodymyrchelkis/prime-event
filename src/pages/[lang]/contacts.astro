@@ -1,0 +1,10 @@
+---
+import ContactsView from '../../views/ContactsView.astro';
+import { prefixedLangPaths, type Lang } from '../../i18n';
+
+export const getStaticPaths = prefixedLangPaths;
+
+const lang = Astro.params.lang as Lang;
+---
+
+<ContactsView lang={lang} />
