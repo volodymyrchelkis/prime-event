@@ -90,3 +90,21 @@ test('every page links its translations for search engines', async ({ page }) =>
     );
   }
 });
+
+test('other services list starts with turnkey party, without kids room or kids events', async ({
+  page,
+}) => {
+  for (const [url, title, first, removed] of [
+    ['/services', 'Другие услуги', 'Праздник под ключ', /Детская комната|Детские мероприятия/],
+    ['/uk/services', 'Інші послуги', 'Свято під ключ', /Дитяча кімната|Дитячі заходи/],
+    ['/bg/services', 'Други услуги', 'Празник до ключ', /Детски кът|Детски събития/],
+  ] as const) {
+    await page.goto(url);
+    await expect(page.getByRole('heading', { level: 2, name: title })).toBeVisible();
+    const services = page.locator('article:not(.package) h3');
+    await expect(services.first()).toHaveText(first);
+    await expect(page.locator('body')).not.toContainText(removed);
+  }
+  await page.goto('/');
+  await expect(page.locator('body')).not.toContainText(/комнат/i);
+});
