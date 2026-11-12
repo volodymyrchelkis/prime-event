@@ -1,0 +1,114 @@
+---
+import { site } from '../data/site';
+
+const input =
+  'w-full border border-line bg-white/70 px-4 py-3 text-ink outline-none focus:border-accent';
+const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercase';
+---
+
+<form id="lead-form" class="mx-auto mt-12 max-w-xl space-y-5 text-left" novalidate>
+  <h2 class="text-center font-serif text-3xl">Оставить заявку</h2>
+  <p class="text-center text-sm text-muted">Перезвоним и обсудим ваш праздник</p>
+
+  <div>
+    <label for="lead-name" class={label}>
+      Имя *
+    </label>
+    <input id="lead-name" name="name" required maxlength="100" autocomplete="name" class={input} />
+  </div>
+  <div>
+    <label for="lead-phone" class={label}>
+      Телефон *
+    </label>
+    <input
+      id="lead-phone"
+      name="phone"
+      type="tel"
+      required
+      maxlength="30"
+      autocomplete="tel"
+      placeholder="+359 ..."
+      class={input}
+    />
+  </div>
+  <div>
+    <label for="lead-date" class={label}>
+      Дата праздника
+    </label>
+    <input id="lead-date" name="date" type="date" class={input} />
+  </div>
+  <div>
+    <label for="lead-comment" class={label}>
+      Комментарий
+    </label>
+    <textarea
+      id="lead-comment"
+      name="comment"
+      rows="4"
+      maxlength="1000"
+      placeholder="Возраст детей, количество гостей, любимые герои..."
+      class={input}
+    ></textarea>
+  </div>
+
+  <!-- Honeypot for bots: hidden from people and screen readers. -->
+  <div class="hidden" aria-hidden="true">
+    <label for="lead-website">Website</label>
+    <input id="lead-website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <button
+    type="submit"
+    class="w-full cursor-pointer bg-ink px-7 py-4 text-xs tracking-[0.2em] text-paper uppercase hover:bg-accent-dark disabled:cursor-wait disabled:opacity-60"
+  >
+    Отправить заявку
+  </button>
+
+  <p id="lead-status" role="status" aria-live="polite" class="min-h-6 text-center text-sm"></p>
+  <p class="text-center text-xs text-muted">
+    Или напишите нам в{' '}
+    <a href={site.telegram} target="_blank" rel="noopener" class="underline">
+      Telegram
+    </a>
+  </p>
+</form>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#lead-form')!;
+  const status = form.querySelector<HTMLParagraphElement>('#lead-status')!;
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+  const show = (text: string, ok: boolean) => {
+    status.textContent = text;
+    status.classList.toggle('text-accent-dark', ok);
+    status.classList.toggle('text-red-700', !ok);
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    button.disabled = true;
+    show('Отправляем…', true);
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const body = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        form.reset();
+        show('Заявка отправлена! Скоро перезвоним 🩵', true);
+      } else {
+        show(`${body.error ?? 'Не удалось отправить заявку'}. Напишите нам в Telegram.`, false);
+      }
+    } catch {
+      show('Нет соединения. Попробуйте ещё раз или напишите в Telegram.', false);
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

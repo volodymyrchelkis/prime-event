@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import LeadForm from '../components/LeadForm.astro';
 import { site } from '../data/site';
 
 const channels = [
@@ -29,6 +30,8 @@ const channels = [
         </a>
       ))}
     </div>
+
+    <LeadForm />
 
     <p class="mt-12 text-sm uppercase tracking-[0.2em] text-muted">{site.city}</p>
   </section>
