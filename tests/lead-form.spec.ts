@@ -1,16 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
-async function fillRequired(page: Page) {
-  await page.getByLabel('Имя *').fill('Анна');
-  await page.getByLabel('Телефон *').fill('+359 88 123 4567');
+async function fillRequired(page: Page, labels = { name: 'Имя *', phone: 'Телефон *' }) {
+  await page.getByLabel(labels.name).fill('Анна');
+  await page.getByLabel(labels.phone).fill('+359 88 123 4567');
 }
 
 test.describe('lead form UI', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/contacts');
-  });
-
   test('sends the filled fields and shows success', async ({ page }) => {
+    await page.goto('/contacts');
     let sent: Record<string, string> | undefined;
     await page.route('**/api/lead', async (route) => {
       sent = route.request().postDataJSON();
@@ -30,24 +27,39 @@ test.describe('lead form UI', () => {
       contact: 'whatsapp',
       date: '2026-12-20',
       comment: 'Ребёнку 6 лет',
+      lang: 'ru',
       website: '',
     });
     await expect(page.getByLabel('Имя *')).toHaveValue('');
   });
 
   test('shows the server error and keeps the input', async ({ page }) => {
+    await page.goto('/contacts');
     await page.route('**/api/lead', (route) =>
-      route.fulfill({ status: 503, json: { error: 'Форма временно недоступна' } }),
+      route.fulfill({ status: 503, json: { error: 'unavailable' } }),
     );
 
     await fillRequired(page);
     await page.getByRole('button', { name: 'Отправить заявку' }).click();
 
-    await expect(page.getByRole('status')).toHaveText(/Форма временно недоступна.*Telegram/);
+    await expect(page.getByRole('status')).toHaveText(
+      'Форма временно недоступна. Напишите нам в Telegram.',
+    );
     await expect(page.getByLabel('Имя *')).toHaveValue('Анна');
   });
 
+  test('falls back to a generic error for an unknown code', async ({ page }) => {
+    await page.goto('/contacts');
+    await page.route('**/api/lead', (route) => route.fulfill({ status: 500, body: 'oops' }));
+
+    await fillRequired(page);
+    await page.getByRole('button', { name: 'Отправить заявку' }).click();
+
+    await expect(page.getByRole('status')).toHaveText(/^Не удалось отправить заявку/);
+  });
+
   test('does not send when required fields are empty', async ({ page }) => {
+    await page.goto('/contacts');
     let requests = 0;
     await page.route('**/api/lead', (route) => {
       requests++;
@@ -59,13 +71,49 @@ test.describe('lead form UI', () => {
     await expect(page.getByLabel('Имя *')).toBeFocused();
     expect(requests).toBe(0);
   });
+
+  test('works in Ukrainian and tells the owner the language', async ({ page }) => {
+    await page.goto('/uk/contacts');
+    let sent: Record<string, string> | undefined;
+    await page.route('**/api/lead', async (route) => {
+      sent = route.request().postDataJSON();
+      await route.fulfill({ status: 422, json: { error: 'phone' } });
+    });
+
+    await fillRequired(page, { name: 'Ім’я *', phone: 'Телефон *' });
+    await page.getByLabel('Як зручніше зв’язатися').selectOption('Viber');
+    await page.getByRole('button', { name: 'Надіслати заявку' }).click();
+
+    await expect(page.getByRole('status')).toHaveText(
+      'Перевірте номер телефону. Напишіть нам у Telegram.',
+    );
+    expect(sent).toMatchObject({ lang: 'uk', contact: 'viber' });
+  });
+
+  test('works in Bulgarian', async ({ page }) => {
+    await page.goto('/bg/contacts');
+    await page.route('**/api/lead', (route) => route.fulfill({ json: { ok: true } }));
+
+    await fillRequired(page, { name: 'Име *', phone: 'Телефон *' });
+    await page.getByRole('button', { name: 'Изпратете запитване' }).click();
+
+    await expect(page.getByRole('status')).toHaveText(/Запитването е изпратено/);
+  });
 });
 
 test.describe('lead API', () => {
-  test('rejects an invalid phone', async ({ request }) => {
+  test('rejects an invalid phone with an error code', async ({ request }) => {
     const res = await request.post('/api/lead', { data: { name: 'Анна', phone: '12' } });
     expect(res.status()).toBe(422);
-    expect(await res.json()).toEqual({ error: 'Проверьте номер телефона' });
+    expect(await res.json()).toEqual({ error: 'phone' });
+  });
+
+  test('rejects an unknown language', async ({ request }) => {
+    const res = await request.post('/api/lead', {
+      data: { name: 'Анна', phone: '+359881234567', lang: 'fr' },
+    });
+    expect(res.status()).toBe(422);
+    expect(await res.json()).toEqual({ error: 'lang' });
   });
 
   test('silently accepts honeypot submissions without sending', async ({ request }) => {

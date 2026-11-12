@@ -2,7 +2,7 @@
 
 Website for **Prime Event** — children's party animators and turnkey events in Varna, Bulgaria.
 
-Pages: Home · Services · Characters · Contacts.
+Pages: Home · Services · Characters · Contacts, in Russian (main), Ukrainian and Bulgarian.
 
 ## Tech stack
 
@@ -35,8 +35,8 @@ Every push and pull request runs [CI](.github/workflows/ci.yml) on GitHub Action
 - **Formatting** — Prettier, with Astro and Tailwind class-order plugins
 - **Type-check** — `astro check`
 - **Build** — production build must succeed
-- **E2E tests** — Playwright on desktop and mobile (Pixel 7) viewports: every page renders, tabs navigate, the character filter works, contact links are correct, the lead form sends and handles errors, no horizontal scroll on phones
-- **Unit tests** — lead validation and the Telegram message format
+- **E2E tests** — Playwright on desktop and mobile (Pixel 7) viewports: every page renders in every language, tabs and the language switcher navigate, the character filter works, contact links are correct, the lead form sends and handles errors, no horizontal scroll on phones
+- **Unit tests** — lead validation, the Telegram message format and language routing
 
 Run the tests locally once with `npx playwright install chromium`, then `npm test`.
 
@@ -53,6 +53,20 @@ It needs two environment variables, set in **Vercel → Settings → Environment
 
 Without them the API answers `503` and the form asks visitors to write in Telegram instead.
 
+## Languages
+
+| Language       | URLs                     |
+| :------------- | :----------------------- |
+| Russian (main) | `/`, `/services`, …      |
+| Ukrainian      | `/uk`, `/uk/services`, … |
+| Bulgarian      | `/bg`, `/bg/services`, … |
+
+- Interface texts live in [`src/i18n/ui.ts`](src/i18n/ui.ts); TypeScript fails the build if a translation is missing.
+- Service texts are translated in [`src/data/services.ts`](src/data/services.ts).
+- Each page is one view in `src/views/`, rendered by `src/pages/*.astro` (Russian) and `src/pages/[lang]/*.astro` (other languages).
+- The header switcher keeps the current page; pages declare their translations with `hreflang` links.
+- Lead notifications stay in Russian for the owner and say which language the visitor used.
+
 ## Search engines
 
 While the site is a draft, `indexable: false` in [`src/data/site.ts`](src/data/site.ts) adds a `noindex` meta tag and a `Disallow` rule in `robots.txt`. Set it to `true` at launch.
@@ -63,10 +77,12 @@ While the site is a draft, `indexable: false` in [`src/data/site.ts`](src/data/s
 src/
 ├── components/   # Reusable UI pieces
 ├── data/         # Site content: contacts, services, characters
-├── layouts/      # Shared page layout (header, footer)
+├── i18n/         # Languages, interface translations, localized URLs
+├── layouts/      # Shared page layout (header, footer, language switcher)
 ├── lib/          # Logic shared by pages and API routes
-├── pages/        # One file per page / route; pages/api for server endpoints
-└── styles/       # Global styles and theme tokens
+├── pages/        # Routes: Russian at the root, [lang]/ for uk and bg, api/ for server endpoints
+├── styles/       # Global styles and theme tokens
+└── views/        # Page bodies shared by all languages
 ```
 
-Content lives in `src/data/` — edit those files to change texts, services or characters without touching the layout.
+Content lives in `src/data/` and `src/i18n/` — edit those files to change texts, services or characters without touching the layout.

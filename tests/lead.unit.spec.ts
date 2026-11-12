@@ -10,25 +10,34 @@ import {
 test.describe('parseLead', () => {
   const valid = { name: ' Анна ', phone: '+359 (88) 123-45-67' };
 
-  test('accepts a valid lead, trims fields and defaults contact to any', () => {
+  test('accepts a valid lead, trims fields and applies defaults', () => {
     expect(parseLead(valid)).toEqual({
       ok: true,
-      lead: { name: 'Анна', phone: '+359 (88) 123-45-67', contact: 'any', date: '', comment: '' },
+      lead: {
+        name: 'Анна',
+        phone: '+359 (88) 123-45-67',
+        contact: 'any',
+        date: '',
+        comment: '',
+        lang: 'ru',
+      },
     });
   });
 
-  test('keeps a known contact method', () => {
-    const result = parseLead({ ...valid, contact: 'viber' });
-    expect(result.ok && result.lead.contact).toBe('viber');
+  test('keeps a known contact method and language', () => {
+    const result = parseLead({ ...valid, contact: 'viber', lang: 'bg' });
+    expect(result.ok && [result.lead.contact, result.lead.lang]).toEqual(['viber', 'bg']);
   });
 
   for (const [data, error] of [
-    [{ ...valid, name: '   ' }, 'Укажите имя'],
-    [{ ...valid, phone: 'abc' }, 'Проверьте номер телефона'],
-    [{ ...valid, phone: '123' }, 'Проверьте номер телефона'],
-    [{ ...valid, date: '20.12.2026' }, 'Проверьте дату'],
-    [{ ...valid, contact: 'pigeon' }, 'Выберите способ связи'],
-    [{ ...valid, contact: 'toString' }, 'Выберите способ связи'],
+    [{ ...valid, name: '   ' }, 'name'],
+    [{ ...valid, phone: 'abc' }, 'phone'],
+    [{ ...valid, phone: '123' }, 'phone'],
+    [{ ...valid, date: '20.12.2026' }, 'date'],
+    [{ ...valid, contact: 'pigeon' }, 'contact'],
+    [{ ...valid, contact: 'toString' }, 'contact'],
+    [{ ...valid, lang: 'en' }, 'lang'],
+    [{ ...valid, lang: 'constructor' }, 'lang'],
     [{ ...valid, website: 'x' }, 'spam'],
   ] as const) {
     test(`rejects ${JSON.stringify(data)} with "${error}"`, () => {
@@ -61,11 +70,12 @@ const lead: Lead = {
   contact: 'viber',
   date: '',
   comment: '',
+  lang: 'uk',
 };
 
-test('formatLead shows the normalized phone and skips empty optional fields', () => {
+test('formatLead shows phone, contact and language, and skips empty optional fields', () => {
   expect(formatLead(lead)).toBe(
-    '🎉 Новая заявка с сайта\n\nИмя: Анна\nТелефон: +359881234567\nСвязь: Viber',
+    '🎉 Новая заявка с сайта\n\nИмя: Анна\nТелефон: +359881234567\nСвязь: Viber\nЯзык сайта: Українська',
   );
 });
 

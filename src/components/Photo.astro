@@ -1,12 +1,12 @@
 ---
 // Заглушка вместо фото, пока нет настоящих снимков.
 interface Props {
-  label?: string;
+  label: string;
   ratio?: string;
   tone?: number;
 }
 
-const { label = '', ratio = '4 / 5', tone = 0 } = Astro.props;
+const { label, ratio = '4 / 5', tone = 0 } = Astro.props;
 const tones = [
   'from-[#efe3d6] to-[#dcc6b2]',
   'from-[#e7e4dc] to-[#cfc8b8]',
@@ -15,10 +15,8 @@ const tones = [
 ---
 
 <div
-  class={`flex items-end bg-gradient-to-br ${tones[tone % tones.length]} p-4`}
+  class={`bg-gradient-to-br ${tones[tone % tones.length]}`}
   style={`aspect-ratio: ${ratio}`}
   role="img"
-  aria-label={label || 'Фото'}
->
-  <span class="text-xs uppercase tracking-[0.2em] text-ink/40">фото</span>
-</div>
+  aria-label={label}
+></div>

@@ -1,25 +1,39 @@
 ---
 import { site } from '../data/site';
-import { contactMethods } from '../lib/lead';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = t(lang).form;
 
 const input =
   'w-full border border-line bg-white/70 px-4 py-3 text-ink outline-none focus:border-accent';
 const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercase';
 ---
 
-<form id="lead-form" class="mx-auto mt-12 max-w-xl space-y-5 text-left" novalidate>
-  <h2 class="text-center font-serif text-3xl">Оставить заявку</h2>
-  <p class="text-center text-sm text-muted">Напишем вам в удобный мессенджер и обсудим праздник</p>
+<form
+  id="lead-form"
+  class="mx-auto mt-12 max-w-xl space-y-5 text-left"
+  data-messages={JSON.stringify(text.messages)}
+  novalidate
+>
+  <h2 class="text-center font-serif text-3xl">{text.title}</h2>
+  <p class="text-center text-sm text-muted">{text.subtitle}</p>
+
+  <input type="hidden" name="lang" value={lang} />
 
   <div>
     <label for="lead-name" class={label}>
-      Имя *
+      {text.name}
     </label>
     <input id="lead-name" name="name" required maxlength="100" autocomplete="name" class={input} />
   </div>
   <div>
     <label for="lead-phone" class={label}>
-      Телефон *
+      {text.phone}
     </label>
     <input
       id="lead-phone"
@@ -34,30 +48,30 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
   </div>
   <div>
     <label for="lead-contact" class={label}>
-      Как удобнее связаться
+      {text.contact}
     </label>
     <select id="lead-contact" name="contact" class={input}>
-      {Object.entries(contactMethods).map(([value, text]) => (
-        <option value={value}>{text}</option>
+      {Object.entries(text.contactMethods).map(([value, name]) => (
+        <option value={value}>{name}</option>
       ))}
     </select>
   </div>
   <div>
     <label for="lead-date" class={label}>
-      Дата праздника
+      {text.date}
     </label>
     <input id="lead-date" name="date" type="date" class={input} />
   </div>
   <div>
     <label for="lead-comment" class={label}>
-      Комментарий
+      {text.comment}
     </label>
     <textarea
       id="lead-comment"
       name="comment"
       rows="4"
       maxlength="1000"
-      placeholder="Возраст детей, количество гостей, любимые герои..."
+      placeholder={text.commentPlaceholder}
       class={input}
     ></textarea>
   </div>
@@ -72,12 +86,12 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
     type="submit"
     class="w-full cursor-pointer bg-ink px-7 py-4 text-xs tracking-[0.2em] text-paper uppercase hover:bg-accent-dark disabled:cursor-wait disabled:opacity-60"
   >
-    Отправить заявку
+    {text.submit}
   </button>
 
   <p id="lead-status" role="status" aria-live="polite" class="min-h-6 text-center text-sm"></p>
   <p class="text-center text-xs text-muted">
-    Или напишите нам в{' '}
+    {text.orWrite}{' '}
     <a href={site.telegram} target="_blank" rel="noopener" class="underline">
       Telegram
     </a>
@@ -85,9 +99,13 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
 </form>
 
 <script>
+  import type { UI } from '../i18n/ui';
+
   const form = document.querySelector<HTMLFormElement>('#lead-form')!;
   const status = form.querySelector<HTMLParagraphElement>('#lead-status')!;
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const messages: UI['form']['messages'] = JSON.parse(form.dataset.messages!);
+  const errors: Record<string, string> = messages.errors;
 
   const show = (text: string, ok: boolean) => {
     status.textContent = text;
@@ -100,7 +118,7 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
     if (!form.reportValidity()) return;
 
     button.disabled = true;
-    show('Отправляем…', true);
+    show(messages.sending, true);
 
     try {
       const res = await fetch('/api/lead', {
@@ -112,12 +130,12 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
 
       if (res.ok) {
         form.reset();
-        show('Заявка отправлена! Скоро перезвоним 🩵', true);
+        show(messages.success, true);
       } else {
-        show(`${body.error ?? 'Не удалось отправить заявку'}. Напишите нам в Telegram.`, false);
+        show(`${errors[body.error] ?? errors.failed}. ${messages.fallback}`, false);
       }
     } catch {
-      show('Нет соединения. Попробуйте ещё раз или напишите в Telegram.', false);
+      show(messages.network, false);
     } finally {
       button.disabled = false;
     }

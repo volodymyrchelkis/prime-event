@@ -4,6 +4,7 @@ import { formatLead, leadButtons, parseLead } from '../../lib/lead';
 
 export const prerender = false;
 
+// Errors are codes ("phone", "unavailable", ...); the form shows them in the visitor's language.
 const json = (status: number, body: object) =>
   new Response(JSON.stringify(body), {
     status,
@@ -15,7 +16,7 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     data = await request.json();
   } catch {
-    return json(400, { error: 'Некорректный запрос' });
+    return json(400, { error: 'bad_request' });
   }
 
   const result = parseLead(data);
@@ -29,7 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
   const chatId = getSecret('TELEGRAM_CHAT_ID');
   if (!token || !chatId) {
     console.error('Lead form: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not set');
-    return json(503, { error: 'Форма временно недоступна' });
+    return json(503, { error: 'unavailable' });
   }
 
   const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -46,7 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (!res.ok) {
     console.error('Lead form: Telegram API responded', res.status, await res.text());
-    return json(502, { error: 'Не удалось отправить заявку' });
+    return json(502, { error: 'failed' });
   }
 
   return json(200, { ok: true });

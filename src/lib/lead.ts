@@ -1,3 +1,6 @@
+import { defaultLang, isLang, languages, type Lang } from '../i18n';
+
+// Labels for the Telegram message the owner reads; the form shows translated ones.
 export const contactMethods = {
   any: 'Любой способ',
   telegram: 'Telegram',
@@ -14,9 +17,13 @@ export interface Lead {
   contact: ContactMethod;
   date: string;
   comment: string;
+  lang: Lang;
 }
 
-export type LeadResult = { ok: true; lead: Lead } | { ok: false; error: string };
+/** Error codes; the form translates them for the visitor. */
+export type LeadError = 'spam' | 'contact' | 'lang' | 'name' | 'phone' | 'date';
+
+export type LeadResult = { ok: true; lead: Lead } | { ok: false; error: LeadError };
 
 export interface LeadButton {
   text: string;
@@ -39,7 +46,10 @@ export function parseLead(data: Record<string, unknown>): LeadResult {
   if (field(data, 'website', 200)) return { ok: false, error: 'spam' };
 
   const contact = field(data, 'contact', 20) || 'any';
-  if (!isContactMethod(contact)) return { ok: false, error: 'Выберите способ связи' };
+  if (!isContactMethod(contact)) return { ok: false, error: 'contact' };
+
+  const lang = field(data, 'lang', 5) || defaultLang;
+  if (!isLang(lang)) return { ok: false, error: 'lang' };
 
   const lead: Lead = {
     name: field(data, 'name', 100),
@@ -47,11 +57,12 @@ export function parseLead(data: Record<string, unknown>): LeadResult {
     contact,
     date: field(data, 'date', 10),
     comment: field(data, 'comment', 1000),
+    lang,
   };
 
-  if (!lead.name) return { ok: false, error: 'Укажите имя' };
-  if (!PHONE_RE.test(lead.phone)) return { ok: false, error: 'Проверьте номер телефона' };
-  if (lead.date && !DATE_RE.test(lead.date)) return { ok: false, error: 'Проверьте дату' };
+  if (!lead.name) return { ok: false, error: 'name' };
+  if (!PHONE_RE.test(lead.phone)) return { ok: false, error: 'phone' };
+  if (lead.date && !DATE_RE.test(lead.date)) return { ok: false, error: 'date' };
 
   return { ok: true, lead };
 }
@@ -75,6 +86,7 @@ export function formatLead(lead: Lead): string {
     `Имя: ${lead.name}`,
     `Телефон: +${internationalDigits(lead.phone)}`,
     `Связь: ${contactMethods[lead.contact]}`,
+    `Язык сайта: ${languages[lead.lang].name}`,
   ];
   if (lead.date) lines.push(`Дата праздника: ${lead.date}`);
   if (lead.comment) lines.push(`Комментарий: ${lead.comment}`);
