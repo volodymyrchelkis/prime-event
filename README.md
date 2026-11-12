@@ -24,6 +24,24 @@ npm run dev       # http://localhost:4321
 | `npm run dev`     | Start the local dev server           |
 | `npm run build`   | Build the production site to `dist/` |
 | `npm run preview` | Preview the production build         |
+| `npm run check`   | Type-check the project               |
+| `npm run format`  | Format all files with Prettier       |
+| `npm test`        | Run end-to-end tests (Playwright)    |
+
+## Quality checks
+
+Every push and pull request runs [CI](.github/workflows/ci.yml) on GitHub Actions:
+
+- **Formatting** — Prettier, with Astro and Tailwind class-order plugins
+- **Type-check** — `astro check`
+- **Build** — production build must succeed
+- **E2E tests** — Playwright on desktop and mobile (Pixel 7) viewports: every page renders, tabs navigate, the character filter works, contact links are correct, no horizontal scroll on phones
+
+Run the tests locally once with `npx playwright install chromium`, then `npm test`.
+
+## Search engines
+
+While the site is a draft, `indexable: false` in [`src/data/site.ts`](src/data/site.ts) adds a `noindex` meta tag and a `Disallow` rule in `robots.txt`. Set it to `true` at launch.
 
 ## Project structure
 
