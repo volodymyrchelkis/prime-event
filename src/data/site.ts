@@ -9,6 +9,8 @@ export const site = {
   telegram: 'https://t.me/iri_prime',
   instagram: 'https://instagram.com/prime_event_nk',
   instagramHandle: '@prime_event_nk',
+  // Пока сайт черновик, поисковики его не индексируют. Поставить true к запуску.
+  indexable: false,
 };
 
 export const nav = [

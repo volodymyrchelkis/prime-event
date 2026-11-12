@@ -17,6 +17,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={site.description} />
+    {!site.indexable && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,24 +30,24 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   <body class="flex min-h-screen flex-col antialiased">
     <header class="border-b border-line">
       <div class="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-6 sm:flex-row sm:justify-between">
-        <a href="/" class="font-serif text-3xl tracking-wide">{site.name}</a>
+        <a href="/" class="font-serif text-3xl tracking-wide">
+          {site.name}
+        </a>
         <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs uppercase tracking-[0.2em]">
-          {
-            nav.map((item) => (
-              <a
-                href={item.href}
-                class:list={[
-                  'border-b pb-1 transition-colors',
-                  path === item.href
-                    ? 'border-accent text-ink'
-                    : 'border-transparent text-muted hover:text-ink',
-                ]}
-                aria-current={path === item.href ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            ))
-          }
+          {nav.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                'border-b pb-1 transition-colors',
+                path === item.href
+                  ? 'border-accent text-ink'
+                  : 'border-transparent text-muted hover:text-ink',
+              ]}
+              aria-current={path === item.href ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
         </nav>
       </div>
     </header>
@@ -57,11 +58,19 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
     <footer class="border-t border-line">
       <div class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:justify-between">
-        <span>© {new Date().getFullYear()} {site.name} · {site.city}</span>
+        <span>
+          © {new Date().getFullYear()} {site.name} · {site.city}
+        </span>
         <div class="flex gap-5">
-          <a href={site.instagram} target="_blank" rel="noopener" class="hover:text-ink">Instagram</a>
-          <a href={site.telegram} target="_blank" rel="noopener" class="hover:text-ink">Telegram</a>
-          <a href={`tel:${site.phone}`} class="hover:text-ink">{site.phoneDisplay}</a>
+          <a href={site.instagram} target="_blank" rel="noopener" class="hover:text-ink">
+            Instagram
+          </a>
+          <a href={site.telegram} target="_blank" rel="noopener" class="hover:text-ink">
+            Telegram
+          </a>
+          <a href={`tel:${site.phone}`} class="hover:text-ink">
+            {site.phoneDisplay}
+          </a>
         </div>
       </div>
     </footer>

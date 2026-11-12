@@ -12,22 +12,26 @@ const tags = [...new Set(characters.map((c) => c.tag))];
     <p class="mt-4 text-center text-muted">Выберите героя для вашего праздника</p>
 
     <div class="mt-8 flex flex-wrap justify-center gap-2" id="filters">
-      <button data-tag="all" class="filter is-active">Все</button>
-      {tags.map((t) => <button data-tag={t} class="filter">{t}</button>)}
+      <button data-tag="all" class="filter is-active">
+        Все
+      </button>
+      {tags.map((t) => (
+        <button data-tag={t} class="filter">
+          {t}
+        </button>
+      ))}
     </div>
 
     <div class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {
-        characters.map((c, i) => (
-          <figure class="character" data-tag={c.tag}>
-            <Photo tone={i} label={c.name} />
-            <figcaption class="mt-3">
-              <span class="block font-serif text-xl">{c.name}</span>
-              <span class="text-xs uppercase tracking-[0.2em] text-muted">{c.tag}</span>
-            </figcaption>
-          </figure>
-        ))
-      }
+      {characters.map((c, i) => (
+        <figure class="character" data-tag={c.tag}>
+          <Photo tone={i} label={c.name} />
+          <figcaption class="mt-3">
+            <span class="block font-serif text-xl">{c.name}</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-muted">{c.tag}</span>
+          </figcaption>
+        </figure>
+      ))}
     </div>
   </section>
 </Layout>
@@ -36,7 +40,7 @@ const tags = [...new Set(characters.map((c) => c.tag))];
   @reference "../styles/global.css";
 
   .filter {
-    @apply cursor-pointer border border-line px-4 py-2 text-xs uppercase tracking-[0.2em] text-muted hover:text-ink;
+    @apply cursor-pointer border border-line px-4 py-2 text-xs tracking-[0.2em] text-muted uppercase hover:text-ink;
   }
   .filter.is-active {
     @apply border-ink bg-ink text-paper;
