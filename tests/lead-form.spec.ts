@@ -178,3 +178,16 @@ test.describe('party programs', () => {
     await expect(page.getByLabel('Программа')).toHaveValue('');
   });
 });
+
+test('services page lists contractors and equipment in every language', async ({ page }) => {
+  for (const [url, heading, item] of [
+    ['/services', 'Подрядчики', 'Фотограф / видеограф'],
+    ['/uk/services', 'Підрядники', 'Конфеті-гармата'],
+    ['/bg/services', 'Изпълнители', 'Машина за дим'],
+  ]) {
+    await page.goto(url);
+    const more = page.locator('#more');
+    await expect(more.getByRole('heading', { name: heading })).toBeVisible();
+    await expect(more).toContainText(item);
+  }
+});
