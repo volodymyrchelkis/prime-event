@@ -18,6 +18,7 @@ test.describe('lead form UI', () => {
     });
 
     await fillRequired(page);
+    await page.getByLabel('Как удобнее связаться').selectOption('WhatsApp');
     await page.getByLabel('Дата праздника').fill('2026-12-20');
     await page.getByLabel('Комментарий').fill('Ребёнку 6 лет');
     await page.getByRole('button', { name: 'Отправить заявку' }).click();
@@ -26,6 +27,7 @@ test.describe('lead form UI', () => {
     expect(sent).toMatchObject({
       name: 'Анна',
       phone: '+359 88 123 4567',
+      contact: 'whatsapp',
       date: '2026-12-20',
       comment: 'Ребёнку 6 лет',
       website: '',
@@ -72,4 +74,19 @@ test.describe('lead API', () => {
     });
     expect(res.status()).toBe(200);
   });
+});
+
+test.describe('Viber hand-off page', () => {
+  test('opens a Viber chat with the given number', async ({ request }) => {
+    const res = await request.get('/go/viber?n=359881234567');
+    expect(res.status()).toBe(200);
+    expect(await res.text()).toContain('viber://chat?number=%2B359881234567');
+  });
+
+  for (const n of ['', 'abc', '359<script>', '1'.repeat(16)]) {
+    test(`rejects n=${JSON.stringify(n)}`, async ({ request }) => {
+      const res = await request.get(`/go/viber?n=${encodeURIComponent(n)}`);
+      expect(res.status()).toBe(400);
+    });
+  }
 });

@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import { contactMethods } from '../lib/lead';
 
 const input =
   'w-full border border-line bg-white/70 px-4 py-3 text-ink outline-none focus:border-accent';
@@ -8,7 +9,7 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
 
 <form id="lead-form" class="mx-auto mt-12 max-w-xl space-y-5 text-left" novalidate>
   <h2 class="text-center font-serif text-3xl">Оставить заявку</h2>
-  <p class="text-center text-sm text-muted">Перезвоним и обсудим ваш праздник</p>
+  <p class="text-center text-sm text-muted">Напишем вам в удобный мессенджер и обсудим праздник</p>
 
   <div>
     <label for="lead-name" class={label}>
@@ -30,6 +31,16 @@ const label = 'mb-2 block text-left text-xs tracking-[0.2em] text-muted uppercas
       placeholder="+359 ..."
       class={input}
     />
+  </div>
+  <div>
+    <label for="lead-contact" class={label}>
+      Как удобнее связаться
+    </label>
+    <select id="lead-contact" name="contact" class={input}>
+      {Object.entries(contactMethods).map(([value, text]) => (
+        <option value={value}>{text}</option>
+      ))}
+    </select>
   </div>
   <div>
     <label for="lead-date" class={label}>

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getSecret } from 'astro:env/server';
-import { formatLead, parseLead } from '../../lib/lead';
+import { formatLead, leadButtons, parseLead } from '../../lib/lead';
 
 export const prerender = false;
 
@@ -35,7 +35,13 @@ export const POST: APIRoute = async ({ request }) => {
   const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text: formatLead(result.lead) }),
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: formatLead(result.lead),
+      reply_markup: {
+        inline_keyboard: [leadButtons(result.lead, new URL(request.url).origin)],
+      },
+    }),
   });
 
   if (!res.ok) {
