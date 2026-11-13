@@ -7,8 +7,6 @@ export const site = {
   instagramHandle: '@prime_event_nk',
   // Пока сайт черновик, поисковики его не индексируют. Поставить true к запуску.
   indexable: false,
-  // Новогодний блок на главной. Выключить (false) после праздников.
-  newYearSeason: true,
 };
 
 // Paths without the language prefix; labels come from src/i18n/ui.ts.
