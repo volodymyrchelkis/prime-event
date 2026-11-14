@@ -20,13 +20,14 @@ npm install
 npm run dev       # http://localhost:4321
 ```
 
-| Command          | Action                                     |
-| :--------------- | :----------------------------------------- |
-| `npm run dev`    | Start the local dev server                 |
-| `npm run build`  | Build for Vercel to `.vercel/output/`      |
-| `npm run check`  | Type-check the project                     |
-| `npm run format` | Format all files with Prettier             |
-| `npm test`       | Run unit and end-to-end tests (Playwright) |
+| Command              | Action                                                       |
+| :------------------- | :----------------------------------------------------------- |
+| `npm run dev`        | Start the local dev server                                   |
+| `npm run build`      | Build for Vercel to `.vercel/output/`                        |
+| `npm run check`      | Type-check the project                                       |
+| `npm run format`     | Format all files with Prettier                               |
+| `npm test`           | Run unit and end-to-end tests (Playwright)                   |
+| `npm run lighthouse` | Lighthouse CI on the built pages (run `npm run build` first) |
 
 ## Quality checks
 
@@ -37,6 +38,9 @@ Every push and pull request runs [CI](.github/workflows/ci.yml) on GitHub Action
 - **Build** — production build must succeed
 - **E2E tests** — Playwright on desktop and mobile (Pixel 7) viewports: every page renders in every language, tabs and the language switcher navigate, the character filter works, contact links are correct, the lead form sends and handles errors, no horizontal scroll on phones
 - **Unit tests** — lead validation, the Telegram message format and language routing
+- **Accessibility** — axe-core checks every page in every language (and the 404 page) against WCAG 2.2 A/AA
+- **SEO** — sitemap, `robots.txt`, canonical and hreflang links, the business card for search engines
+- **Lighthouse** — [Lighthouse CI](lighthouserc.cjs) on the built pages: performance ≥ 90, accessibility 100, best practices ≥ 95, plus the individual SEO audits. The report is attached to every CI run
 
 Run the tests locally once with `npx playwright install chromium`, then `npm test`.
 
@@ -70,6 +74,11 @@ Without them the API answers `503` and the form asks visitors to write in Telegr
 ## Search engines
 
 While the site is a draft, `indexable: false` in [`src/data/site.ts`](src/data/site.ts) adds a `noindex` meta tag and a `Disallow` rule in `robots.txt`. Set it to `true` at launch.
+
+- [`/sitemap.xml`](src/pages/sitemap.xml.ts) lists every page in every language with its translations; `robots.txt` points to it.
+- Every page has a canonical link and full-address hreflang links (`x-default` = Russian).
+- The home page carries a schema.org `EntertainmentBusiness` card ([`BusinessSchema.astro`](src/components/BusinessSchema.astro)): name, city, phone, price range, Instagram and Telegram.
+- Full addresses come from `site` in [`astro.config.mjs`](astro.config.mjs). Change it there when the site gets its own domain.
 
 ## Project structure
 

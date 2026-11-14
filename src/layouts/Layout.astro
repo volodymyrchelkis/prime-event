@@ -15,6 +15,8 @@ const text = t(lang);
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${text.tagline}`;
 const { path } = splitPath(Astro.url.pathname);
 const switchPath = alternates ? path : '/';
+// Search engines need full addresses in canonical and hreflang links.
+const absolute = (p: string) => new URL(p, Astro.site).href;
 ---
 
 <!doctype html>
@@ -24,8 +26,12 @@ const switchPath = alternates ? path : '/';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={text.description} />
     {!site.indexable && <meta name="robots" content="noindex, nofollow" />}
+    {alternates && <link rel="canonical" href={absolute(localizePath(lang, path))} />}
     {alternates &&
-      langs.map((l) => <link rel="alternate" hreflang={l} href={localizePath(l, path)} />)}
+      langs.map((l) => (
+        <link rel="alternate" hreflang={l} href={absolute(localizePath(l, path))} />
+      ))}
+    {alternates && <link rel="alternate" hreflang="x-default" href={absolute(path)} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -70,14 +76,15 @@ const switchPath = alternates ? path : '/';
                   hreflang={l}
                   lang={l}
                   title={languages[l].name}
-                  aria-label={languages[l].name}
                   aria-current={l === lang ? 'true' : undefined}
                   class:list={[
                     'block px-2 py-1 transition-colors',
                     l === lang ? 'bg-ink text-paper' : 'text-muted hover:text-ink',
                   ]}
                 >
-                  {languages[l].label}
+                  {languages[l].label}{' '}
+                  {/* Screen readers hear "UA Українська": the visible label stays part of the name (WCAG 2.5.3). */}
+                  <span class="sr-only">{languages[l].name}</span>
                 </a>
               </li>
             ))}
