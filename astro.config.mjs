@@ -7,6 +7,9 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
+  // Absolute links (sitemap, structured data). Change here when the site gets its own domain.
+  site: 'https://prime-event-tau.vercel.app',
+
   vite: {
     plugins: [tailwindcss()],
   },
