@@ -45,3 +45,18 @@ test('holiday tabs: New Year and Halloween in every language', async ({ page }) 
     }
   }
 });
+
+test('character groups: for girls, for boys, universal', async ({ page }) => {
+  for (const [url, groups] of [
+    ['/characters', ['Для девочек', 'Для мальчиков', 'Универсальные']],
+    ['/uk/characters', ['Для дівчаток', 'Для хлопчиків', 'Універсальні']],
+    ['/bg/characters', ['За момичета', 'За момчета', 'Универсални']],
+  ] as const) {
+    await page.goto(url);
+    const filters = page.locator('#filters');
+    for (const name of groups) {
+      await expect(filters.getByRole('button', { name, exact: true })).toBeVisible();
+    }
+    await expect(filters).not.toContainText(/Принцес|Супергеро|Мультф|Анимации/);
+  }
+});

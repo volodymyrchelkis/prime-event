@@ -9,14 +9,14 @@ export interface Character {
 
 // TODO: заменить на настоящих персонажей и фото от Prime Event.
 export const characters: Character[] = [
-  { name: 'Персонаж 1', tag: 'princess' },
-  { name: 'Персонаж 2', tag: 'superhero' },
-  { name: 'Персонаж 3', tag: 'cartoon' },
-  { name: 'Персонаж 4', tag: 'princess' },
-  { name: 'Персонаж 5', tag: 'superhero' },
-  { name: 'Персонаж 6', tag: 'cartoon' },
-  { name: 'Персонаж 7', tag: 'princess' },
-  { name: 'Персонаж 8', tag: 'cartoon' },
+  { name: 'Персонаж 1', tag: 'girls' },
+  { name: 'Персонаж 2', tag: 'boys' },
+  { name: 'Персонаж 3', tag: 'universal' },
+  { name: 'Персонаж 4', tag: 'girls' },
+  { name: 'Персонаж 5', tag: 'boys' },
+  { name: 'Персонаж 6', tag: 'universal' },
+  { name: 'Персонаж 7', tag: 'girls' },
+  { name: 'Персонаж 8', tag: 'universal' },
   { name: 'Персонаж 9', tag: 'newYear' },
   { name: 'Персонаж 10', tag: 'newYear' },
   { name: 'Персонаж 11', tag: 'halloween' },

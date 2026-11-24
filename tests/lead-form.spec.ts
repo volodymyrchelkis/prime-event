@@ -148,6 +148,10 @@ test.describe('party programs', () => {
     await expect(cards).toContainText(['100 €', '150 €', '200 €']);
     await expect(page.locator('#extras')).toContainText('Пиньята');
     await expect(page.locator('#extras')).not.toContainText('Ведущий');
+    const teens = page.locator('#extras li').first();
+    await expect(teens).toContainText('Программы для подростков');
+    await expect(teens).toContainText('Мафия, «Угадай, кто я» и другие игры для детей 8–13 лет');
+    await expect(teens).toContainText('от 100 €');
     // Payment terms belong to the turnkey party, not to the programs.
     await expect(page.getByText(/аванс 40%/)).toHaveCount(1);
     await expect(
