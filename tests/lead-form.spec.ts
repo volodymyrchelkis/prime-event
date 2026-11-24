@@ -140,7 +140,7 @@ test.describe('Viber hand-off page', () => {
 });
 
 test.describe('party programs', () => {
-  test('services page lists programs with prices, extras and payment terms', async ({ page }) => {
+  test('services page lists programs with prices and extras', async ({ page }) => {
     await page.goto('/services');
     const cards = page.locator('article.package');
     await expect(cards).toHaveCount(3);
@@ -148,7 +148,11 @@ test.describe('party programs', () => {
     await expect(cards).toContainText(['100 €', '150 €', '200 €']);
     await expect(page.locator('#extras')).toContainText('Пиньята');
     await expect(page.locator('#extras')).not.toContainText('Ведущий');
-    await expect(page.getByText(/аванс 40%/)).toBeVisible();
+    // Payment terms belong to the turnkey party, not to the programs.
+    await expect(page.getByText(/аванс 40%/)).toHaveCount(1);
+    await expect(
+      page.locator('article:not(.package)', { hasText: 'Праздник под ключ' }),
+    ).toContainText('Оплата в два этапа: аванс 40%');
   });
 
   test('choosing a program preselects it in the form and sends it', async ({ page }) => {

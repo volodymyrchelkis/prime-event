@@ -4,6 +4,8 @@ export interface Service {
   title: Localized;
   text: Localized;
   price?: Localized;
+  /** Payment terms, shown under the description. */
+  terms?: Localized;
   /** false: listed on /services only, not in "What we do" on the home page. */
   onHome?: boolean;
 }
@@ -20,6 +22,11 @@ export const services: Service[] = [
       ru: 'Берём на себя всё: программу, персонажей, декор и ведущего. Вам остаётся только радоваться.',
       uk: 'Беремо на себе все: програму, персонажів, декор і ведучого. Вам залишається тільки радіти.',
       bg: 'Поемаме всичко: програма, герои, декор и водещ. На вас остава само да се радвате.',
+    },
+    terms: {
+      ru: 'Оплата в два этапа: аванс 40% от суммы, остаток — за день до праздника.',
+      uk: 'Оплата у два етапи: аванс 40% від суми, решта — за день до свята.',
+      bg: 'Плащане на два етапа: капаро 40% от сумата, остатъкът — ден преди празника.',
     },
   },
   {
