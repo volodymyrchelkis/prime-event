@@ -91,28 +91,36 @@ test('every page links its translations for search engines', async ({ page }) =>
   }
 });
 
-test('other services list starts with turnkey party, without kids room, kids events or consultation', async ({
+test('other services list starts with turnkey party, without kids room or kids events', async ({
   page,
 }) => {
   for (const [url, title, first, removed] of [
-    [
-      '/services',
-      'Другие услуги',
-      'Праздник под ключ',
-      /Детская комната|Детские мероприятия|Консультац/,
-    ],
-    ['/uk/services', 'Інші послуги', 'Свято під ключ', /Дитяча кімната|Дитячі заходи|Консультац/],
-    ['/bg/services', 'Други услуги', 'Празник до ключ', /Детски кът|Детски събития|Консултац/],
+    ['/services', 'Другие услуги', 'Праздник под ключ', /Детская комната|Детские мероприятия/],
+    ['/uk/services', 'Інші послуги', 'Свято під ключ', /Дитяча кімната|Дитячі заходи/],
+    ['/bg/services', 'Други услуги', 'Празник до ключ', /Детски кът|Детски събития/],
   ] as const) {
     await page.goto(url);
     await expect(page.getByRole('heading', { level: 2, name: title })).toBeVisible();
     const services = page.locator('article:not(.package) h3');
     await expect(services.first()).toHaveText(first);
-    await expect(services).toHaveCount(2);
     await expect(page.locator('body')).not.toContainText(removed);
   }
-  for (const url of ['/', '/uk', '/bg']) {
-    await page.goto(url);
-    await expect(page.locator('body')).not.toContainText(/комнат|консульт|консулт/i);
+  await page.goto('/');
+  await expect(page.locator('body')).not.toContainText(/комнат/i);
+});
+
+test('consultation is listed on the services page but not on the home page', async ({ page }) => {
+  for (const [lang, consultation] of [
+    ['ru', 'Консультация организатора'],
+    ['uk', 'Консультація організатора'],
+    ['bg', 'Консултация с организатор'],
+  ] as const) {
+    await page.goto(localizePath(lang, '/services'));
+    await expect(page.locator('article:not(.package) h3').last()).toHaveText(consultation);
+
+    await page.goto(localizePath(lang, '/'));
+    const cards = page.locator('main a h3');
+    await expect(cards).toHaveCount(2);
+    await expect(page.locator('main')).not.toContainText(consultation);
   }
 });

@@ -2,7 +2,7 @@ import type { Localized } from '../i18n';
 
 // Prices come from the price cards on varnaevent.mssg.me (checked 2026-11-12).
 // The cards show lev and euro; the site shows euro. Where a card has lev only,
-// euro uses the owner's own 2:1 rounding (200 лв = 100 €).
+// euro uses the owner's own 2:1 rounding (e.g. 200 лв / 100 € for the consultation).
 
 export interface Package {
   id: 'standard' | 'premium' | 'maximum';

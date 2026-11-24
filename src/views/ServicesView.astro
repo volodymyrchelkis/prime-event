@@ -103,6 +103,7 @@ const contacts = localizePath(lang, '/contacts');
             <p class="text-xs tracking-[0.3em] text-accent uppercase">0{i + 1}</p>
             <h3 class="mt-3 font-serif text-3xl">{s.title[lang]}</h3>
             <p class="mt-4 text-muted">{s.text[lang]}</p>
+            {s.price && <p class="mt-3 text-accent-dark">{s.price[lang]}</p>}
             <a
               href={contacts}
               class="mt-6 inline-block border-b border-ink pb-1 text-xs tracking-[0.2em] uppercase hover:text-accent-dark"
