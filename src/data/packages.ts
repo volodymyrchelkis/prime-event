@@ -74,9 +74,24 @@ export interface Extra {
   name: Localized;
   /** "from" price in euro; null when it depends on the party. */
   fromEur: number | null;
+  note?: Localized;
 }
 
 export const extras: Extra[] = [
+  {
+    name: {
+      ru: 'Программы для подростков',
+      uk: 'Програми для підлітків',
+      bg: 'Програми за тийнейджъри',
+    },
+    // Priced like the kids' programs: from the cheapest one.
+    fromEur: Math.min(...packages.map((p) => p.priceEur)),
+    note: {
+      ru: 'Мафия, «Угадай, кто я» и другие игры для детей 8–13 лет',
+      uk: 'Мафія, «Вгадай, хто я» та інші ігри для дітей 8–13 років',
+      bg: 'Мафия, „Познай кой съм“ и други игри за деца от 8 до 13 години',
+    },
+  },
   {
     name: { ru: 'Пиньята', uk: 'Піньята', bg: 'Пинята' },
     fromEur: 15,
