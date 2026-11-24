@@ -10,11 +10,4 @@ export interface Character {
   image?: ImageMetadata;
 }
 
-// Real photos come from characterPhotos.ts (Vite-only, so tests do not import it).
-export const placeholderCharacters: Character[] = [
-  // TODO: holiday costumes are still placeholders until the owner sends photos.
-  { name: 'Персонаж 9', tag: 'newYear' },
-  { name: 'Персонаж 10', tag: 'newYear' },
-  { name: 'Персонаж 11', tag: 'halloween' },
-  { name: 'Персонаж 12', tag: 'halloween' },
-];
+// The list itself is built from the photos in characterPhotos.ts (Vite-only, so tests do not import it).
