@@ -145,6 +145,9 @@ test('home page shows the two hero photos next to the title', async ({ page }) =
     await page.goto(localizePath(lang, '/'));
     const photos = page.locator('main section').first().locator('img');
     await expect(photos).toHaveCount(2);
+    // Confetti show first, animators second.
+    await expect(photos.nth(0)).toHaveAttribute('src', /hero-confetti/);
+    await expect(photos.nth(1)).toHaveAttribute('src', /hero-characters/);
     for (const [i, alt] of t(lang).home.heroPhotos.entries()) {
       const img = photos.nth(i);
       await expect(img).toHaveAttribute('alt', alt);
