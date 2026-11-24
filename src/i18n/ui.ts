@@ -43,6 +43,7 @@ const ru = {
   characters: {
     title: 'Персонажи',
     subtitle: 'Выберите героя для вашего праздника',
+    photoAlt: 'Аниматор Prime Event в костюме',
     all: 'Все',
     tags: {
       girls: 'Для девочек',
@@ -142,6 +143,7 @@ const uk: UI = {
   characters: {
     title: 'Персонажі',
     subtitle: 'Оберіть героя для вашого свята',
+    photoAlt: 'Аніматор Prime Event у костюмі',
     all: 'Усі',
     tags: {
       girls: 'Для дівчаток',
@@ -239,6 +241,7 @@ const bg: UI = {
   characters: {
     title: 'Герои',
     subtitle: 'Изберете герой за вашия празник',
+    photoAlt: 'Аниматор на Prime Event в костюм',
     all: 'Всички',
     tags: {
       girls: 'За момичета',
