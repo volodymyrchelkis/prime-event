@@ -158,14 +158,14 @@ test('home page shows the two hero photos next to the title', async ({ page }) =
   }
 });
 
-test('turnkey party and event organization show their photos on home and services', async ({
+test('turnkey party shows the banquet table, event organization the kids party', async ({
   page,
 }) => {
   for (const url of ['/', '/services', '/bg', '/uk/services']) {
     await page.goto(url);
     for (const [title, file] of [
-      [/Праздник под ключ|Свято під ключ|Празник до ключ/, /turnkey-party/],
-      [/Организация события|Організація події|Организация на събития/, /event-organization/],
+      [/Праздник под ключ|Свято під ключ|Празник до ключ/, /banquet-table/],
+      [/Организация события|Організація події|Организация на събития/, /kids-new-year/],
     ] as const) {
       const card = page
         .locator('main article')

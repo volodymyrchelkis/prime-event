@@ -1,7 +1,7 @@
 import type { ImageMetadata } from 'astro';
 import type { Localized } from '../i18n';
-import turnkeyParty from '../assets/services/turnkey-party.jpg';
-import eventOrganization from '../assets/services/event-organization.jpg';
+import kidsNewYear from '../assets/services/kids-new-year.jpg';
+import banquetTable from '../assets/services/banquet-table.jpg';
 
 export interface Service {
   title: Localized;
@@ -28,11 +28,13 @@ export const services: Service[] = [
       bg: 'Поемаме всичко: програма, герои, декор и водещ. На вас остава само да се радвате.',
     },
     photo: {
-      image: turnkeyParty,
+      image: banquetTable,
+      // Keep the table, not the ceiling, in view.
+      position: 'center 80%',
       alt: {
-        ru: 'Новогодний праздник: аниматоры и дети в серпантине',
-        uk: 'Новорічне свято: аніматори й діти в серпантині',
-        bg: 'Новогодишен празник: аниматори и деца в серпантини',
+        ru: 'Праздничный стол с цветами и сервировкой в банкетном зале',
+        uk: 'Святковий стіл із квітами та сервіруванням у банкетній залі',
+        bg: 'Празнична маса с цветя и сервиз в банкетна зала',
       },
     },
     terms: {
@@ -53,13 +55,11 @@ export const services: Service[] = [
       bg: 'Юбилеи и семейни празници: подбираме изпълнители и водим събитието от началото до края.',
     },
     photo: {
-      image: eventOrganization,
-      // Keep the table, not the ceiling, in view.
-      position: 'center 80%',
+      image: kidsNewYear,
       alt: {
-        ru: 'Праздничный стол с цветами и сервировкой в банкетном зале',
-        uk: 'Святковий стіл із квітами та сервіруванням у банкетній залі',
-        bg: 'Празнична маса с цветя и сервиз в банкетна зала',
+        ru: 'Новогодний праздник: аниматоры и дети в серпантине',
+        uk: 'Новорічне свято: аніматори й діти в серпантині',
+        bg: 'Новогодишен празник: аниматори и деца в серпантини',
       },
     },
   },
