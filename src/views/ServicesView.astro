@@ -85,7 +85,13 @@ const contacts = localizePath(lang, '/contacts');
       {services.map((s, i) => (
         <article class="grid items-center gap-8 md:grid-cols-2">
           <div class:list={[i % 2 === 1 && 'md:order-2']}>
-            <Photo ratio="4 / 3" tone={i} label={s.title[lang]} />
+            <Photo
+              ratio="4 / 3"
+              tone={i}
+              label={s.photo?.alt[lang] ?? s.title[lang]}
+              image={s.photo?.image}
+              position={s.photo?.position}
+            />
           </div>
           <div>
             <p class="text-xs tracking-[0.3em] text-accent uppercase">0{i + 1}</p>

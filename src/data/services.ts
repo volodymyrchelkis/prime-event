@@ -1,4 +1,7 @@
+import type { ImageMetadata } from 'astro';
 import type { Localized } from '../i18n';
+import turnkeyParty from '../assets/services/turnkey-party.jpg';
+import eventOrganization from '../assets/services/event-organization.jpg';
 
 export interface Service {
   title: Localized;
@@ -6,6 +9,7 @@ export interface Service {
   price?: Localized;
   /** Payment terms, shown under the description. */
   terms?: Localized;
+  photo?: { image: ImageMetadata; alt: Localized; position?: string };
   /** false: listed on /services only, not in "What we do" on the home page. */
   onHome?: boolean;
 }
@@ -23,6 +27,14 @@ export const services: Service[] = [
       uk: 'Беремо на себе все: програму, персонажів, декор і ведучого. Вам залишається тільки радіти.',
       bg: 'Поемаме всичко: програма, герои, декор и водещ. На вас остава само да се радвате.',
     },
+    photo: {
+      image: turnkeyParty,
+      alt: {
+        ru: 'Новогодний праздник: аниматоры и дети в серпантине',
+        uk: 'Новорічне свято: аніматори й діти в серпантині',
+        bg: 'Новогодишен празник: аниматори и деца в серпантини',
+      },
+    },
     terms: {
       ru: 'Оплата в два этапа: аванс 40% от суммы, остаток — за день до праздника.',
       uk: 'Оплата у два етапи: аванс 40% від суми, решта — за день до свята.',
@@ -39,6 +51,16 @@ export const services: Service[] = [
       ru: 'Юбилеи и семейные праздники: подбираем подрядчиков и ведём событие от начала до конца.',
       uk: 'Ювілеї та сімейні свята: підбираємо підрядників і ведемо подію від початку до кінця.',
       bg: 'Юбилеи и семейни празници: подбираме изпълнители и водим събитието от началото до края.',
+    },
+    photo: {
+      image: eventOrganization,
+      // Keep the table, not the ceiling, in view.
+      position: 'center 80%',
+      alt: {
+        ru: 'Праздничный стол с цветами и сервировкой в банкетном зале',
+        uk: 'Святковий стіл із квітами та сервіруванням у банкетній залі',
+        bg: 'Празнична маса с цветя и сервиз в банкетна зала',
+      },
     },
   },
   {

@@ -67,7 +67,13 @@ const text = t(lang);
           .filter((s) => s.onHome !== false)
           .map((s, i) => (
             <article>
-              <Photo ratio="4 / 3" tone={i} label={s.title[lang]} />
+              <Photo
+                ratio="4 / 3"
+                tone={i}
+                label={s.photo?.alt[lang] ?? s.title[lang]}
+                image={s.photo?.image}
+                position={s.photo?.position}
+              />
               <h3 class="mt-4 font-serif text-2xl">{s.title[lang]}</h3>
             </article>
           ))}
