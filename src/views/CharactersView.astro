@@ -36,6 +36,7 @@ const tags = [...new Set(characters.map((c) => c.tag))];
             tone={i}
             label={c.name ?? `${text.photoAlt} · ${text.tags[c.tag]}`}
             image={c.image}
+            priority={i < 2}
             position="center 25%"
             sizes="(min-width: 1024px) 280px, (min-width: 768px) 33vw, 50vw"
           />
