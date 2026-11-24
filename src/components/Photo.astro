@@ -1,12 +1,26 @@
 ---
-// Заглушка вместо фото, пока нет настоящих снимков.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+// A real photo when `image` is given, otherwise a placeholder until the owner sends one.
 interface Props {
   label: string;
   ratio?: string;
   tone?: number;
+  image?: ImageMetadata;
+  /** Above the fold: load at once instead of lazily. */
+  priority?: boolean;
+  sizes?: string;
 }
 
-const { label, ratio = '4 / 5', tone = 0 } = Astro.props;
+const {
+  label,
+  ratio = '4 / 5',
+  tone = 0,
+  image,
+  priority = false,
+  sizes = '(min-width: 768px) 50vw, 100vw',
+} = Astro.props;
 const tones = [
   'from-[#efe3d6] to-[#dcc6b2]',
   'from-[#e7e4dc] to-[#cfc8b8]',
@@ -14,9 +28,22 @@ const tones = [
 ];
 ---
 
-<div
-  class={`bg-gradient-to-br ${tones[tone % tones.length]}`}
-  style={`aspect-ratio: ${ratio}`}
-  role="img"
-  aria-label={label}
-></div>
+{image ? (
+  <Image
+    src={image}
+    alt={label}
+    widths={[400, 800, 1200]}
+    sizes={sizes}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    class="w-full object-cover"
+    style={`aspect-ratio: ${ratio}`}
+  />
+) : (
+  <div
+    class={`bg-gradient-to-br ${tones[tone % tones.length]}`}
+    style={`aspect-ratio: ${ratio}`}
+    role="img"
+    aria-label={label}
+  />
+)}

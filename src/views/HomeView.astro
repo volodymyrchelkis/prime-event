@@ -2,9 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import Photo from '../components/Photo.astro';
 import BusinessSchema from '../components/BusinessSchema.astro';
-import { site } from '../data/site';
 import { services } from '../data/services';
 import { localizePath, t, type Lang } from '../i18n';
+import heroCharacters from '../assets/home/hero-characters.jpg';
+import heroConfetti from '../assets/home/hero-confetti.jpg';
 
 interface Props {
   lang: Lang;
@@ -39,9 +40,21 @@ const text = t(lang);
       </div>
     </div>
     <div class="grid grid-cols-2 gap-3">
-      <Photo label={site.name} ratio="3 / 4" tone={0} />
+      <Photo
+        label={text.home.heroPhotos[0]}
+        ratio="3 / 4"
+        image={heroCharacters}
+        priority
+        sizes="(min-width: 768px) 280px, 50vw"
+      />
       <div class="mt-10">
-        <Photo label={site.name} ratio="3 / 4" tone={2} />
+        <Photo
+          label={text.home.heroPhotos[1]}
+          ratio="3 / 4"
+          image={heroConfetti}
+          priority
+          sizes="(min-width: 768px) 280px, 50vw"
+        />
       </div>
     </div>
   </section>

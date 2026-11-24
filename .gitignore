@@ -29,3 +29,6 @@ test-results/
 .vercel
 lighthouse-report/
 .lighthouseci/
+
+# original photos from the owner; optimized copies go to src/assets
+photos/
