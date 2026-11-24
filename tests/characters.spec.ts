@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { placeholderCharacters } from '../src/data/characters';
 
 // The photo list is built by Vite (import.meta.glob), so counts come from the page.
 import { t } from '../src/i18n';
@@ -31,23 +30,17 @@ for (const [lang, url] of [
   });
 }
 
-test('holiday tabs: New Year and Halloween in every language', async ({ page }) => {
-  for (const [url, newYear, halloween] of [
-    ['/characters', 'Новый год', 'Хэллоуин'],
-    ['/uk/characters', 'Новий рік', 'Гелловін'],
-    ['/bg/characters', 'Нова година', 'Хелоуин'],
+test('no New Year or Halloween tabs, only the three groups', async ({ page }) => {
+  for (const [url, all, groups] of [
+    ['/characters', 'Все', ['Для девочек', 'Для мальчиков', 'Универсальные']],
+    ['/uk/characters', 'Усі', ['Для дівчаток', 'Для хлопчиків', 'Універсальні']],
+    ['/bg/characters', 'Всички', ['За момичета', 'За момчета', 'Универсални']],
   ] as const) {
     await page.goto(url);
-    const cards = page.locator('figure.character');
-    for (const [name, tag] of [
-      [newYear, 'newYear'],
-      [halloween, 'halloween'],
-    ] as const) {
-      await page.locator('#filters').getByRole('button', { name }).click();
-      const visible = cards.filter({ visible: true });
-      await expect(visible).toHaveCount(placeholderCharacters.filter((c) => c.tag === tag).length);
-      await expect(visible.first()).toContainText(name);
-    }
+    await expect(page.locator('#filters button')).toHaveText([all, ...groups]);
+    await expect(page.locator('main')).not.toContainText(
+      /Новый год|Хэллоуин|Новий рік|Гелловін|Нова година|Хелоуин|Персонаж \d/,
+    );
   }
 });
 

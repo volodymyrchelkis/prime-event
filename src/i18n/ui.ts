@@ -49,8 +49,6 @@ const ru = {
       girls: 'Для девочек',
       boys: 'Для мальчиков',
       universal: 'Универсальные',
-      newYear: 'Новый год',
-      halloween: 'Хэллоуин',
     },
   },
   contacts: {
@@ -149,8 +147,6 @@ const uk: UI = {
       girls: 'Для дівчаток',
       boys: 'Для хлопчиків',
       universal: 'Універсальні',
-      newYear: 'Новий рік',
-      halloween: 'Гелловін',
     },
   },
   contacts: {
@@ -247,8 +243,6 @@ const bg: UI = {
       girls: 'За момичета',
       boys: 'За момчета',
       universal: 'Универсални',
-      newYear: 'Нова година',
-      halloween: 'Хелоуин',
     },
   },
   contacts: {

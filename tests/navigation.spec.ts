@@ -116,6 +116,8 @@ test('other services list starts with turnkey party, without kids room or kids e
     await expect(page.getByRole('heading', { level: 2, name: title })).toBeVisible();
     const services = page.locator('article:not(.package) h3');
     await expect(services.first()).toHaveText(first);
+    // No 01/02/03 counters above the titles.
+    await expect(page.locator('article:not(.package)').first()).not.toContainText(/\b0[1-9]\b/);
     await expect(page.locator('body')).not.toContainText(removed);
   }
   await page.goto('/');
@@ -130,6 +132,9 @@ test('consultation is listed on the services page but not on the home page', asy
   ] as const) {
     await page.goto(localizePath(lang, '/services'));
     await expect(page.locator('article:not(.package) h3').last()).toHaveText(consultation);
+    const card = page.locator('article:not(.package)').last();
+    await expect(card).toContainText('100 €');
+    await expect(card).not.toContainText('1–3');
 
     await page.goto(localizePath(lang, '/'));
     const cards = page.locator('main article h3');
