@@ -25,3 +25,23 @@ for (const [lang, url] of [
     await expect(cards.filter({ visible: true })).toHaveCount(characters.length);
   });
 }
+
+test('holiday tabs: New Year and Halloween in every language', async ({ page }) => {
+  for (const [url, newYear, halloween] of [
+    ['/characters', 'Новый год', 'Хэллоуин'],
+    ['/uk/characters', 'Новий рік', 'Гелловін'],
+    ['/bg/characters', 'Нова година', 'Хелоуин'],
+  ] as const) {
+    await page.goto(url);
+    const cards = page.locator('figure.character');
+    for (const [name, tag] of [
+      [newYear, 'newYear'],
+      [halloween, 'halloween'],
+    ] as const) {
+      await page.locator('#filters').getByRole('button', { name }).click();
+      const visible = cards.filter({ visible: true });
+      await expect(visible).toHaveCount(characters.filter((c) => c.tag === tag).length);
+      await expect(visible.first()).toContainText(name);
+    }
+  }
+});
