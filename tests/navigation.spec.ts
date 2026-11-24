@@ -145,12 +145,37 @@ test('home page shows the two hero photos next to the title', async ({ page }) =
     await page.goto(localizePath(lang, '/'));
     const photos = page.locator('main section').first().locator('img');
     await expect(photos).toHaveCount(2);
+    // Confetti show first, animators second.
+    await expect(photos.nth(0)).toHaveAttribute('src', /hero-confetti/);
+    await expect(photos.nth(1)).toHaveAttribute('src', /hero-characters/);
     for (const [i, alt] of t(lang).home.heroPhotos.entries()) {
       const img = photos.nth(i);
       await expect(img).toHaveAttribute('alt', alt);
       await expect(img).toHaveAttribute('srcset', /webp/);
       await expect(img).toHaveJSProperty('complete', true);
       expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+    }
+  }
+});
+
+test('turnkey party and event organization show their photos on home and services', async ({
+  page,
+}) => {
+  for (const url of ['/', '/services', '/bg', '/uk/services']) {
+    await page.goto(url);
+    for (const [title, file] of [
+      [/Праздник под ключ|Свято під ключ|Празник до ключ/, /turnkey-party/],
+      [/Организация события|Організація події|Организация на събития/, /event-organization/],
+    ] as const) {
+      const card = page
+        .locator('main article')
+        .filter({ has: page.locator('h3', { hasText: title }) });
+      const img = card.locator('img');
+      await expect(img).toHaveAttribute('src', file);
+      await img.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
+        .toBeGreaterThan(0);
     }
   }
 });

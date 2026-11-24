@@ -11,6 +11,8 @@ interface Props {
   /** Above the fold: load at once instead of lazily. */
   priority?: boolean;
   sizes?: string;
+  /** CSS object-position: which part of the photo stays in view when it is cropped. */
+  position?: string;
 }
 
 const {
@@ -20,6 +22,7 @@ const {
   image,
   priority = false,
   sizes = '(min-width: 768px) 50vw, 100vw',
+  position = 'center',
 } = Astro.props;
 const tones = [
   'from-[#efe3d6] to-[#dcc6b2]',
@@ -37,7 +40,7 @@ const tones = [
     loading={priority ? 'eager' : 'lazy'}
     fetchpriority={priority ? 'high' : 'auto'}
     class="w-full object-cover"
-    style={`aspect-ratio: ${ratio}`}
+    style={`aspect-ratio: ${ratio}; object-position: ${position}`}
   />
 ) : (
   <div
