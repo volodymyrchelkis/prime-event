@@ -139,3 +139,18 @@ test('consultation is listed on the services page but not on the home page', asy
     await expect(page.locator('main')).not.toContainText(consultation);
   }
 });
+
+test('home page shows the two hero photos next to the title', async ({ page }) => {
+  for (const lang of langs) {
+    await page.goto(localizePath(lang, '/'));
+    const photos = page.locator('main section').first().locator('img');
+    await expect(photos).toHaveCount(2);
+    for (const [i, alt] of t(lang).home.heroPhotos.entries()) {
+      const img = photos.nth(i);
+      await expect(img).toHaveAttribute('alt', alt);
+      await expect(img).toHaveAttribute('srcset', /webp/);
+      await expect(img).toHaveJSProperty('complete', true);
+      expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+    }
+  }
+});
