@@ -145,8 +145,9 @@ test.describe('party programs', () => {
     const cards = page.locator('article.package');
     await expect(cards).toHaveCount(3);
     await expect(cards.locator('h3')).toHaveText(['Стандарт', 'Премиум', 'Максимум']);
-    await expect(cards).toContainText(['90 €', '140 €', '190 €']);
+    await expect(cards).toContainText(['100 €', '150 €', '200 €']);
     await expect(page.locator('#extras')).toContainText('Пиньята');
+    await expect(page.locator('#extras')).not.toContainText('Ведущий');
     await expect(page.getByText(/аванс 40%/)).toBeVisible();
   });
 
@@ -179,15 +180,17 @@ test.describe('party programs', () => {
   });
 });
 
-test('services page lists contractors and equipment in every language', async ({ page }) => {
-  for (const [url, heading, item] of [
-    ['/services', 'Подрядчики', 'Фотограф / видеограф'],
-    ['/uk/services', 'Підрядники', 'Конфеті-гармата'],
-    ['/bg/services', 'Изпълнители', 'Машина за дим'],
-  ]) {
+test('services page lists contractors, without equipment, in every language', async ({ page }) => {
+  for (const [url, heading, item, equipment] of [
+    ['/services', 'Подрядчики', 'Фотограф / видеограф', /Оборудование|Дым-машина/],
+    ['/uk/services', 'Підрядники', 'Декоратор', /Обладнання|Конфеті-гармата/],
+    ['/bg/services', 'Изпълнители', 'Декоратор', /Оборудване|Машина за дим/],
+  ] as const) {
     await page.goto(url);
     const more = page.locator('#more');
     await expect(more.getByRole('heading', { name: heading })).toBeVisible();
     await expect(more).toContainText(item);
+    await expect(page.locator('main')).not.toContainText(equipment);
+    await expect(page.locator('main')).not.toContainText(/свадьб|весіл|сватб/i);
   }
 });

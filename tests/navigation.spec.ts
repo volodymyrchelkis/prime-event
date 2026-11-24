@@ -119,8 +119,10 @@ test('consultation is listed on the services page but not on the home page', asy
     await expect(page.locator('article:not(.package) h3').last()).toHaveText(consultation);
 
     await page.goto(localizePath(lang, '/'));
-    const cards = page.locator('main a h3');
+    const cards = page.locator('main article h3');
     await expect(cards).toHaveCount(2);
+    // The tiles are plain cards, not links.
+    await expect(page.locator('main a h3')).toHaveCount(0);
     await expect(page.locator('main')).not.toContainText(consultation);
   }
 });

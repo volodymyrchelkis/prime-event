@@ -84,7 +84,7 @@ test('formatLead shows phone, contact and language, and skips empty optional fie
 });
 
 test('formatLead names the chosen program with its price', () => {
-  expect(formatLead({ ...lead, package: 'premium' })).toContain('Программа: Премиум (140 €)');
+  expect(formatLead({ ...lead, package: 'premium' })).toContain('Программа: Премиум (150 €)');
 });
 
 test('parseLead keeps a known program', () => {
