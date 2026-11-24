@@ -121,3 +121,21 @@ test('other services list starts with turnkey party, without kids room or kids e
   await page.goto('/');
   await expect(page.locator('body')).not.toContainText(/комнат/i);
 });
+
+test('consultation is listed on the services page but not on the home page', async ({ page }) => {
+  for (const [lang, consultation] of [
+    ['ru', 'Консультация организатора'],
+    ['uk', 'Консультація організатора'],
+    ['bg', 'Консултация с организатор'],
+  ] as const) {
+    await page.goto(localizePath(lang, '/services'));
+    await expect(page.locator('article:not(.package) h3').last()).toHaveText(consultation);
+
+    await page.goto(localizePath(lang, '/'));
+    const cards = page.locator('main article h3');
+    await expect(cards).toHaveCount(2);
+    // The tiles are plain cards, not links.
+    await expect(page.locator('main a h3')).toHaveCount(0);
+    await expect(page.locator('main')).not.toContainText(consultation);
+  }
+});

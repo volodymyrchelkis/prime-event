@@ -49,13 +49,15 @@ const text = t(lang);
   <section class="border-t border-line">
     <div class="mx-auto max-w-6xl px-4 py-16">
       <h2 class="text-center font-serif text-4xl">{text.home.whatWeDo}</h2>
-      <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {services.slice(0, 3).map((s, i) => (
-          <a href={localizePath(lang, '/services')} class="group block">
-            <Photo ratio="4 / 3" tone={i} label={s.title[lang]} />
-            <h3 class="mt-4 font-serif text-2xl group-hover:text-accent-dark">{s.title[lang]}</h3>
-          </a>
-        ))}
+      <div class="mt-10 grid gap-8 sm:grid-cols-2">
+        {services
+          .filter((s) => s.onHome !== false)
+          .map((s, i) => (
+            <article>
+              <Photo ratio="4 / 3" tone={i} label={s.title[lang]} />
+              <h3 class="mt-4 font-serif text-2xl">{s.title[lang]}</h3>
+            </article>
+          ))}
       </div>
     </div>
   </section>
