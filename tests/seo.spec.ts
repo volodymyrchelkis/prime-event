@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { packages } from '../src/data/packages';
 import { nav } from '../src/data/site';
 import { langs, localizePath, t } from '../src/i18n';
 
@@ -37,7 +38,8 @@ for (const lang of langs) {
     expect(data.description).toBe(t(lang).description);
     expect(data.url).toBe(new URL(localizePath(lang, '/'), SITE).href);
     expect(data.address.addressLocality).toBe('Varna');
-    expect(data.priceRange).toBe('90–190 €');
+    const prices = packages.map((p) => p.priceEur);
+    expect(data.priceRange).toBe(`${Math.min(...prices)}–${Math.max(...prices)} €`);
     expect(data.inLanguage).toBe(lang);
   });
 }
