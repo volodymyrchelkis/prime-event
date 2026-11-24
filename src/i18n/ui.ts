@@ -42,6 +42,8 @@ const ru = {
       princess: 'Принцессы',
       superhero: 'Супергерои',
       cartoon: 'Мультфильмы',
+      newYear: 'Новый год',
+      halloween: 'Хэллоуин',
     },
   },
   contacts: {
@@ -133,6 +135,8 @@ const uk: UI = {
       princess: 'Принцеси',
       superhero: 'Супергерої',
       cartoon: 'Мультфільми',
+      newYear: 'Новий рік',
+      halloween: 'Гелловін',
     },
   },
   contacts: {
@@ -222,6 +226,8 @@ const bg: UI = {
       princess: 'Принцеси',
       superhero: 'Супергерои',
       cartoon: 'Анимации',
+      newYear: 'Нова година',
+      halloween: 'Хелоуин',
     },
   },
   contacts: {

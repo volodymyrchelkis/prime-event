@@ -17,4 +17,8 @@ export const characters: Character[] = [
   { name: 'Персонаж 6', tag: 'cartoon' },
   { name: 'Персонаж 7', tag: 'princess' },
   { name: 'Персонаж 8', tag: 'cartoon' },
+  { name: 'Персонаж 9', tag: 'newYear' },
+  { name: 'Персонаж 10', tag: 'newYear' },
+  { name: 'Персонаж 11', tag: 'halloween' },
+  { name: 'Персонаж 12', tag: 'halloween' },
 ];
