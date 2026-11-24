@@ -6,12 +6,15 @@ import { languages, langs, localizePath, splitPath, t, type Lang } from '../i18n
 interface Props {
   lang: Lang;
   title?: string;
+  /** false for pages that exist in one language only (404): no hreflang, switcher goes home. */
+  alternates?: boolean;
 }
 
-const { lang, title } = Astro.props;
+const { lang, title, alternates = true } = Astro.props;
 const text = t(lang);
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${text.tagline}`;
 const { path } = splitPath(Astro.url.pathname);
+const switchPath = alternates ? path : '/';
 ---
 
 <!doctype html>
@@ -21,9 +24,8 @@ const { path } = splitPath(Astro.url.pathname);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={text.description} />
     {!site.indexable && <meta name="robots" content="noindex, nofollow" />}
-    {langs.map((l) => (
-      <link rel="alternate" hreflang={l} href={localizePath(l, path)} />
-    ))}
+    {alternates &&
+      langs.map((l) => <link rel="alternate" hreflang={l} href={localizePath(l, path)} />)}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -64,7 +66,7 @@ const { path } = splitPath(Astro.url.pathname);
             {langs.map((l) => (
               <li>
                 <a
-                  href={localizePath(l, path)}
+                  href={localizePath(l, switchPath)}
                   hreflang={l}
                   lang={l}
                   title={languages[l].name}
