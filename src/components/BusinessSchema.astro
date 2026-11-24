@@ -1,0 +1,35 @@
+---
+import { site } from '../data/site';
+import { packages } from '../data/packages';
+import { localizePath, t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+// schema.org "local business" card: lets search engines show the business,
+// its city, phone and prices for searches like "аниматоры Варна".
+const { lang } = Astro.props;
+const text = t(lang);
+const prices = packages.map((p) => p.priceEur);
+
+const data = {
+  '@context': 'https://schema.org',
+  '@type': 'EntertainmentBusiness',
+  name: site.name,
+  description: text.description,
+  url: new URL(localizePath(lang, '/'), Astro.site).href,
+  telephone: site.phone,
+  address: { '@type': 'PostalAddress', addressLocality: 'Varna', addressCountry: 'BG' },
+  areaServed: { '@type': 'City', name: 'Varna' },
+  priceRange: `${Math.min(...prices)}–${Math.max(...prices)} €`,
+  currenciesAccepted: 'EUR',
+  sameAs: [site.instagram, site.telegram],
+  inLanguage: lang,
+};
+
+// "<" is escaped so no text in the data can close the script tag.
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={json} is:inline />

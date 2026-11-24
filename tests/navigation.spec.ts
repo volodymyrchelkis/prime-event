@@ -60,8 +60,13 @@ test('header tabs keep the current language', async ({ page }) => {
 test('language switcher opens the same page in another language', async ({ page }) => {
   await page.goto('/services');
   const switcher = page.getByRole('list', { name: 'Язык сайта' });
-  await expect(switcher.getByRole('link')).toHaveText(['RU', 'UA', 'BG']);
-  await expect(switcher.locator('[aria-current="true"]')).toHaveText('RU');
+  // Visible label first, full name for screen readers after it (WCAG 2.5.3 label in name).
+  await expect(switcher.getByRole('link')).toHaveText([
+    'RU Русский',
+    'UA Українська',
+    'BG Български',
+  ]);
+  await expect(switcher.locator('[aria-current="true"]')).toHaveAccessibleName('RU Русский');
 
   await switcher.getByRole('link', { name: 'Українська' }).click();
   await expect(page).toHaveURL(/\/uk\/services\/?$/);
@@ -86,9 +91,17 @@ test('every page links its translations for search engines', async ({ page }) =>
   for (const lang of langs) {
     await expect(page.locator(`link[rel="alternate"][hreflang="${lang}"]`)).toHaveAttribute(
       'href',
-      localizePath(lang, '/contacts'),
+      `https://prime-event-tau.vercel.app${localizePath(lang, '/contacts')}`,
     );
   }
+  await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute(
+    'href',
+    'https://prime-event-tau.vercel.app/contacts',
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://prime-event-tau.vercel.app/bg/contacts',
+  );
 });
 
 test('other services list starts with turnkey party, without kids room or kids events', async ({
